@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=0.45, maximum-scale=1, user-scalable=no">
+    <title>视频播放 - 传说之下攻略站</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <script src="js/includes.js"></script>
+    <style>
+        /* 播放器页面特定样式 */
+        .player-page {
+            padding: 20px 0;
+        }
+        
+        .video-player-container {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+        
+        .video-player {
+            width: 100%;
+            aspect-ratio: 16/9;
+            background-color: #000;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+        
+        .video-player iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        
+        .video-info {
+            background-color: rgba(0, 0, 0, 0.1);
+            border-radius: 4px;
+            padding: 15px;
+        }
+        
+        .video-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: var(--text-dark);
+        }
+        
+        .video-meta {
+            font-size: 0.9rem;
+            color: var(--text-light);
+            margin-bottom: 15px;
+        }
+        
+        .video-description {
+            font-size: 1rem;
+            line-height: 1.6;
+            color: var(--text-dark);
+        }
+        
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background-color: var(--primary-purple);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+        
+        .back-btn:hover {
+            background-color: var(--secondary-purple);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+        
+        /* 抖音视频自适应样式 */
+        .douyin {
+            width: max(730px, 100%);
+            margin-inline: auto;
+            overflow: hidden;
+        }
+        
+        .douyin iframe {
+            aspect-ratio: 0.4821;
+            width: 100%;
+            height: auto;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .video-title {
+                font-size: 1.2rem;
+            }
+            
+            .video-player-container {
+                padding: 15px;
+            }
+            
+            /* 移动端抖音样式 */
+            .douyin {
+                width: min(324px, 100%);
+            }
+        }
+    </style>
+</head>
+<body>
+    <script>
+        initPage('视频播放 - 传说之下攻略站', 'content');
+    </script>
+
+    <!-- 播放器页面内容 -->
+    <main class="player-page">
+        <div class="container">
+            <!-- 返回按钮 -->
+            <button class="back-btn" onclick="window.history.back()">
+                ← 返回攻略内容
+            </button>
+            
+            <!-- 视频播放器区域 -->
+            <div class="video-player-container">
+                <div class="video-player">
+                    <div class="douyin">
+                        <iframe id="video-iframe" referrerpolicy="unsafe-url" frameborder="0" scrolling="no" allowfullscreen></iframe>
+                    </div>
+                </div>
+                
+                <!-- 视频信息 -->
+                <div class="video-info">
+                    <h2 class="video-title" id="video-title">视频标题</h2>
+                    <div class="video-meta" id="video-meta">视频信息</div>
+                    <div class="video-description" id="video-description">视频描述</div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="js/script.js"></script>
+    <script>
+        // 从URL参数获取视频信息并填充到页面
+        function initPlayer() {
+            // 获取URL参数
+            const urlParams = new URLSearchParams(window.location.search);
+            const videoId = urlParams.get('video_id');
+            const title = urlParams.get('title');
+            const date = urlParams.get('date');
+            const game = urlParams.get('game');
+            const chapter = urlParams.get('chapter');
+            
+            // 如果没有提供video_id，显示错误信息
+            if (!videoId) {
+                document.getElementById('video-title').textContent = '错误：未提供视频ID';
+                document.getElementById('video-meta').textContent = '请在URL中提供video_id参数';
+                return;
+            }
+            
+            // 构建视频iframe URL
+            const iframeSrc = `https://open.douyin.com/player/video?vid=${videoId}&autoplay=0`;
+            
+            // 设置视频标题和元信息
+            document.getElementById('video-title').textContent = title ? decodeURIComponent(title) : '视频标题';
+            
+            // 构建元信息
+            const metaInfo = [];
+            if (date) metaInfo.push(decodeURIComponent(date));
+            if (game) metaInfo.push(decodeURIComponent(game));
+            if (chapter) metaInfo.push(decodeURIComponent(chapter));
+            metaInfo.push('抖音视频');
+            document.getElementById('video-meta').textContent = metaInfo.join(' · ');
+            
+            // 设置iframe的src
+            const iframe = document.getElementById('video-iframe');
+            if (iframe) {
+                iframe.src = iframeSrc;
+            }
+        }
+        
+        // 页面加载完成后初始化播放器
+        document.addEventListener('DOMContentLoaded', initPlayer);
+    </script>
+</body>
+</html>

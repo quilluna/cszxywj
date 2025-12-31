@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=0.45, maximum-scale=1, user-scalable=no">
+    <title>传说之下攻略站 - Undertale & Deltarune</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <script src="js/includes.js"></script>
+</head>
+<body>
+    <script>
+        initPage('传说之下攻略站 - Undertale & Deltarune', 'home');
+    </script>
+
+    <!-- 主页内容 -->
+    <main class="main-content">
+        <!-- 个人信息区域 - 头像和名称 -->
+        <section class="profile-section">
+            <div class="container">
+                <div class="profile-card">
+                    <div class="profile-avatar">
+                        <img src="imgs/avatar.jpeg" alt="头像">
+                    </div>
+                    <div class="profile-name-container">
+                        <h3 class="profile-name">Frisk</h3>
+                        <p class="profile-douyin">抖音号：cszxywj</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- 更新预告区域 -->
+        <section class="update-section">
+            <div class="container">
+                <div class="update-card">
+                    <div class="profile预告">
+                        <h4>📢 更新预告</h4>
+                        <div class="warn-card">
+                            <h4>⚠️ 通知</h4>
+                            <p>暂时停更中，感谢大家的支持和理解！</p>
+                        </div>
+                        <div class="update-subcard">
+                            <h5 class="update-title">三角符文第四章 p1 攻略</h5>
+                            <p class="update-time" data-status="pending">更新时间待定</p>
+                            <p class="update-countdown" id="countdown-timer">正在计算...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <script>
+            // 动态计算倒计时
+            function updateCountdown() {
+                // 检查更新时间状态
+                const updateTimeElement = document.querySelector('.update-time');
+                const countdownElement = document.getElementById('countdown-timer');
+                
+                // 如果是待定状态，则隐藏倒计时
+                if (updateTimeElement && updateTimeElement.dataset.status === 'pending') {
+                    countdownElement.style.display = 'none';
+                    return;
+                }
+                
+                // 设置下次更新时间
+                const nextUpdateTime = new Date('2025-08-11 22:00:00').getTime();
+                const now = new Date().getTime();
+                const timeRemaining = nextUpdateTime - now;
+
+                if (timeRemaining <= 0) {
+                    document.getElementById('countdown-timer').innerHTML = '视频已更新！';
+                    return;
+                }
+
+                // 计算天、时、分、秒
+                const days = Math.floor(timeRemaining / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((timeRemaining % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((timeRemaining % (1000 * 60)) / 1000);
+
+                // 格式化显示
+                const countdownString = `剩${days}天 ${hours}时 ${minutes}分 ${seconds}秒`;
+                document.getElementById('countdown-timer').innerHTML = countdownString;
+            }
+
+            // 初始调用一次
+            updateCountdown();
+
+            // 每秒更新一次
+            setInterval(updateCountdown, 1000);
+        </script>
+
+        <!-- 热门视频区域 -->
+        <section class="popular-videos">
+            <div class="container">
+                <h2 class="section-title">为你推荐</h2>
+                <div class="no-videos">
+                    <p>暂无推荐视频</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="js/script.js"></script>
+</body>
+</html>

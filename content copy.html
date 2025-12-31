@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=0.45, maximum-scale=1, user-scalable=no">
+    <title>攻略内容 - 传说之下攻略站</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <script src="js/includes.js"></script>
+</head>
+<body>
+    <script>
+        initPage('攻略内容 - 传说之下攻略站', 'content');
+    </script>
+
+    <!-- 内容页面 -->
+    <main class="content-page">
+        <div class="container">
+            <h2 class="page-title">攻略内容</h2>
+            
+            <!-- 游戏选择区域 -->
+            <div id="game-selector" class="game-selector fade-in">
+                <div class="selector-container">
+                    <h3>请选择游戏类型</h3>
+                    <div class="game-options">
+                        <button class="game-option game-option-with-cover game-option-undertale" data-game="undertale"></button>
+                        <button class="game-option game-option-with-cover game-option-deltarune" data-game="deltarune"></button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 章节选择区域 -->
+            <div id="chapter-selector" class="chapter-selector hidden fade-in">
+                <div class="selector-container">
+                    <h3>请选择章节</h3>
+                    <div class="chapter-options">
+                        <button class="chapter-option" data-chapter="1">第一章</button>
+                        <button class="chapter-option" data-chapter="2">第二章</button>
+                        <button class="chapter-option" data-chapter="3">第三章</button>
+                        <button class="chapter-option" data-chapter="4">第四章</button>
+                        <button class="chapter-option" data-chapter="analysis">剧情分析</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 视频显示区域 -->
+            <div id="video-container" class="video-container hidden fade-in">
+                <!-- 传说之下视频 -->
+                <div class="video-item" data-game="undertale" data-chapter="all" video_id="6931924026151472392">
+                    <div class="video-thumbnail">
+                        <img src="imgs/undertale0.png" alt="废墟">
+                        <div class="video-duration">03:34</div>
+                        <div class="play-btn">▶</div>
+                    </div>
+                    <div class="video-info">
+                        <div class="video-title">🏚️废墟</div>
+                        <div class="video-meta">
+                            <span class="video-date">已发布 2021年02月22日 11:25</span>
+                            <span class="video-game-tag">Undertale</span>
+                        </div>
+                    </div>
+                </div>
+                
+
+                
+                <div class="video-item" data-game="undertale" data-chapter="all" video_id="6980319242474294542">
+                    <div class="video-thumbnail">
+                        <img src="imgs/undertale1.webp" alt="雪镇">
+                        <div class="video-duration">06:27</div>
+                        <div class="play-btn">▶</div>
+                    </div>
+                    <div class="video-info">
+                        <div class="video-title">❄️雪镇</div>
+                        <div class="video-meta">
+                            <span class="video-date">已发布 2021年07月02日 21:23</span>
+                            <span class="video-game-tag">Undertale</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="video-item" data-game="undertale" data-chapter="all" video_id="6986475838787161357">
+                    <div class="video-thumbnail">
+                        <img src="imgs/undertale2.webp" alt="瀑布">
+                        <div class="video-duration">10:20</div>
+                        <div class="play-btn">▶</div>
+                    </div>
+                    <div class="video-info">
+                        <div class="video-title">🏞️瀑布</div>
+                        <div class="video-meta">
+                            <span class="video-date">已发布 2021年07月19日 11:34</span>
+                            <span class="video-game-tag">Undertale</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="video-item" data-game="undertale" data-chapter="all" video_id="">
+                    <div class="video-thumbnail">
+                        <img src="imgs/undertale3.png" alt="热域">
+                        <div class="video-duration">12:03</div>
+                        <div class="play-btn">▶</div>
+                    </div>
+                    <div class="video-info">
+                        <div class="video-title">🌋热域</div>
+                        <div class="video-meta">
+                            <span class="video-date">
+                                <span class="status-warning" title="审核未通过">异常</span> 2021年08月24日 14:26
+                            </span>
+                            <span class="video-game-tag">Undertale</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="video-item" data-game="undertale" data-chapter="all" video_id="7032947727679917349">
+                    <div class="video-thumbnail">
+                        <img src="imgs/undertale4.webp" alt="中立线">
+                        <div class="video-duration">08:46</div>
+                        <div class="play-btn">▶</div>
+                    </div>
+                    <div class="video-info">
+                        <div class="video-title">⏳核心+中立线</div>
+                        <div class="video-meta">
+                            <span class="video-date">已发布 2021年11月21日 17:09</span>
+                            <span class="video-game-tag">Undertale</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="video-item" data-game="undertale" data-chapter="all" video_id="7034871585819381029">
+                    <div class="video-thumbnail">
+                        <img src="imgs/undertale5.webp" alt="和平线">
+                        <div class="video-duration">10:48</div>
+                        <div class="play-btn">▶</div>
+                    </div>
+                    <div class="video-info">
+                        <div class="video-title">🕊️和平线</div>
+                        <div class="video-meta">
+                            <span class="video-date">已发布 2021年11月26日 21:34</span>
+                            <span class="video-game-tag">Undertale</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="video-item" data-game="undertale" data-chapter="all" video_id="7064745954355727646" data-spoiler="true">
+                    <div class="video-thumbnail">
+                        <img src="imgs/undertale6.webp" alt="屠杀线">
+                        <div class="video-duration">49:59</div>
+                        <div class="play-btn">▶</div>
+                    </div>
+                    <div class="video-info">
+                        <div class="video-title">🔪屠杀线</div>
+                        <div class="video-meta">
+                            <span class="video-date">已发布 2022年02月15日 09:43</span>
+                            <span class="video-game-tag">Undertale</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 三角符文视频 -->
+                <!-- 第一章视频 -->
+                <div class="video-item" data-game="deltarune" data-chapter="1" video_id="7084598170008833317">
+                    <div class="video-thumbnail">
+                        <img src="imgs/deltarune1.jpeg" alt="三角符文第一章第1集">
+                        <div class="video-duration">28:30</div>
+                        <div class="play-btn">▶</div>
+                    </div>
+                    <div class="video-info">
+                        <div class="video-title">第1章第1集</div>
+                        <div class="video-meta">
+                            <span class="video-date">已发布 2021年11月26日 21:34</span>
+                            <span class="video-game-tag">Deltarune</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="video-item" data-game="deltarune" data-chapter="1" video_id="7087134314483207428">
+                    <div class="video-thumbnail">
+                        <img src="imgs/deltarune1.jpeg" alt="三角符文第一章第2集">
+                        <div class="video-duration">25:15</div>
+                        <div class="play-btn">▶</div>
+                    </div>
+                    <div class="video-info">
+                        <div class="video-title">第1章第2集</div>
+                        <div class="video-meta">
+                            <span class="video-date">已发布 2021年11月26日 21:34</span>
+                            <span class="video-game-tag">Deltarune</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="video-item" data-game="deltarune" data-chapter="1" video_id="7088562334305668360">
+                    <div class="video-thumbnail">
+                        <img src="imgs/deltarune1.jpeg" alt="三角符文第一章第3集">
+                        <div class="video-duration">30:45</div>
+                        <div class="play-btn">▶</div>
+                    </div>
+                    <div class="video-info">
+                        <div class="video-title">第1章第3集</div>
+                        <div class="video-meta">
+                            <span class="video-date">已发布 2021年11月26日 21:34</span>
+                            <span class="video-game-tag">Deltarune</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="video-item" data-game="deltarune" data-chapter="1" video_id="7116508751494008071">
+                    <div class="video-thumbnail">
+                        <img src="imgs/deltarune1.jpeg" alt="三角符文第一章第4集">
+                        <div class="video-duration">27:20</div>
+                        <div class="play-btn">▶</div>
+                    </div>
+                    <div class="video-info">
+                        <div class="video-title">第1章第4集</div>
+                        <div class="video-meta">
+                            <span class="video-date">已发布 2021年11月26日 21:34</span>
+                            <span class="video-game-tag">Deltarune</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="video-item" data-game="deltarune" data-chapter="1" video_id="7142865116516666654">
+                    <div class="video-thumbnail">
+                        <img src="imgs/deltarune1.jpeg" alt="三角符文第一章第5集">
+                        <div class="video-duration">32:10</div>
+                        <div class="play-btn">▶</div>
+                    </div>
+                    <div class="video-info">
+                        <div class="video-title">第1章第5集</div>
+                        <div class="video-meta">
+                            <span class="video-date">已发布 2021年11月26日 21:34</span>
+                            <span class="video-game-tag">Deltarune</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="video-item" data-game="deltarune" data-chapter="1" video_id="7147316834482539808">
+                    <div class="video-thumbnail">
+                        <img src="imgs/deltarune1.jpeg" alt="三角符文第一章第6集">
+                        <div class="video-duration">29:35</div>
+                        <div class="play-btn">▶</div>
+                    </div>
+                    <div class="video-info">
+                        <div class="video-title">第1章第6集</div>
+                        <div class="video-meta">
+                            <span class="video-date">已发布 2021年11月26日 21:34</span>
+                            <span class="video-game-tag">Deltarune</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 第二章视频 -->
+                <div class="video-item" data-game="deltarune" data-chapter="2" video_id="7151769750987672836">
+                    <div class="video-thumbnail">
+                        <img src="imgs/deltarune2.png" alt="三角符文第二章第1集">
+                        <div class="video-duration">32:15</div>
+                        <div class="play-btn">▶</div>
+                    </div>
+                    <div class="video-info">
+                        <div class="video-title">第2章第1集</div>
+                        <div class="video-meta">
+                            <span class="video-date">已发布 2021年11月26日 21:34</span>
+                            <span class="video-game-tag">Deltarune</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="video-item" data-game="deltarune" data-chapter="2" video_id="7190733884311506237">
+                    <div class="video-thumbnail">
+                        <img src="imgs/deltarune2.png" alt="三角符文第二章第2集">
+                        <div class="video-duration">30:40</div>
+                        <div class="play-btn">▶</div>
+                    </div>
+                    <div class="video-info">
+                        <div class="video-title">第2章第2集</div>
+                        <div class="video-meta">
+                            <span class="video-date">已发布 2021年11月26日 21:34</span>
+                            <span class="video-game-tag">Deltarune</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="video-item" data-game="deltarune" data-chapter="2" video_id="7200382083129183545">
+                    <div class="video-thumbnail">
+                        <img src="imgs/deltarune2.png" alt="三角符文第二章第3集">
+                        <div class="video-duration">28:30</div>
+                        <div class="play-btn">▶</div>
+                    </div>
+                    <div class="video-info">
+                        <div class="video-title">第2章第3集</div>
+                        <div class="video-meta">
+                            <span class="video-date">已发布 2021年11月26日 21:34</span>
+                            <span class="video-game-tag">Deltarune</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="video-item" data-game="deltarune" data-chapter="2" video_id="7204835170627767609">
+                    <div class="video-thumbnail">
+                        <img src="imgs/deltarune2.png" alt="三角符文第二章第4集">
+                        <div class="video-duration">35:20</div>
+                        <div class="play-btn">▶</div>
+                    </div>
+                    <div class="video-info">
+                        <div class="video-title">第2章第4集</div>
+                        <div class="video-meta">
+                            <span class="video-date">已发布 2021年11月26日 21:34</span>
+                            <span class="video-game-tag">Deltarune</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="video-item" data-game="deltarune" data-chapter="2" video_id="210401394405182757">
+                    <div class="video-thumbnail">
+                        <img src="imgs/deltarune2.png" alt="三角符文第二章第5集">
+                        <div class="video-duration">29:15</div>
+                        <div class="play-btn">▶</div>
+                    </div>
+                    <div class="video-info">
+                        <div class="video-title">第2章第5集</div>
+                        <div class="video-meta">
+                            <span class="video-date">已发布 2021年11月26日 21:34</span>
+                            <span class="video-game-tag">Deltarune</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="video-item" data-game="deltarune" data-chapter="2" video_id="7215225443807431974">
+                    <div class="video-thumbnail">
+                        <img src="imgs/deltarune2.png" alt="三角符文第二章第6集">
+                        <div class="video-duration">31:45</div>
+                        <div class="play-btn">▶</div>
+                    </div>
+                    <div class="video-info">
+                        <div class="video-title">第2章第6集</div>
+                        <div class="video-meta">
+                            <span class="video-date">已发布 2021年11月26日 21:34</span>
+                            <span class="video-game-tag">Deltarune</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="video-item" data-game="deltarune" data-chapter="2" video_id="7220420682293742908">
+                    <div class="video-thumbnail">
+                        <img src="imgs/deltarune2.png" alt="三角符文第二章第7集">
+                        <div class="video-duration">27:30</div>
+                        <div class="play-btn">▶</div>
+                    </div>
+                    <div class="video-info">
+                        <div class="video-title">第2章第7集</div>
+                        <div class="video-meta">
+                            <span class="video-date">已发布 2021年11月26日 21:34</span>
+                            <span class="video-game-tag">Deltarune</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="video-item" data-game="deltarune" data-chapter="2" video_id="7228213414261214520">
+                    <div class="video-thumbnail">
+                        <img src="imgs/deltarune2.png" alt="三角符文第二章第8集">
+                        <div class="video-duration">33:20</div>
+                        <div class="play-btn">▶</div>
+                    </div>
+                    <div class="video-info">
+                        <div class="video-title">第2章第8集</div>
+                        <div class="video-meta">
+                            <span class="video-date">已发布 2021年11月26日 21:34</span>
+                            <span class="video-game-tag">Deltarune</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="video-item" data-game="deltarune" data-chapter="2" video_id="7233408664390880572">
+                    <div class="video-thumbnail">
+                        <img src="imgs/deltarune2.png" alt="三角符文第二章第9集">
+                        <div class="video-duration">30:15</div>
+                        <div class="play-btn">▶</div>
+                    </div>
+                    <div class="video-info">
+                        <div class="video-title">第2章第9集</div>
+                        <div class="video-meta">
+                            <span class="video-date">已发布 2021年11月26日 21:34</span>
+                            <span class="video-game-tag">Deltarune</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="video-item" data-game="deltarune" data-chapter="2" video_id="7241201488100330807">
+                    <div class="video-thumbnail">
+                        <img src="imgs/deltarune2.png" alt="三角符文第二章第10集">
+                        <div class="video-duration">28:45</div>
+                        <div class="play-btn">▶</div>
+                    </div>
+                    <div class="video-info">
+                        <div class="video-title">第2章第10集</div>
+                        <div class="video-meta">
+                            <span class="video-date">已发布 2021年11月26日 21:34</span>
+                            <span class="video-game-tag">Deltarune</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="video-item" data-game="deltarune" data-chapter="2" video_id="7261982281408023869">
+                    <div class="video-thumbnail">
+                        <img src="imgs/deltarune2.png" alt="三角符文第二章第11集">
+                        <div class="video-duration">32:30</div>
+                        <div class="play-btn">▶</div>
+                    </div>
+                    <div class="video-info">
+                        <div class="video-title">第2章第11集</div>
+                        <div class="video-meta">
+                            <span class="video-date">已发布 2021年11月26日 21:34</span>
+                            <span class="video-game-tag">Deltarune</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="video-item" data-game="deltarune" data-chapter="2" video_id="7270483257785961769">
+                    <div class="video-thumbnail">
+                        <img src="imgs/deltarune2.png" alt="三角符文第二章第12集">
+                        <div class="video-duration">35:15</div>
+                        <div class="play-btn">▶</div>
+                    </div>
+                    <div class="video-info">
+                        <div class="video-title">第2章第12集</div>
+                        <div class="video-meta">
+                            <span class="video-date">已发布 2021年11月26日 21:34</span>
+                            <span class="video-game-tag">Deltarune</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="video-item" data-game="deltarune" data-chapter="2" video_id="7276737365710785851">
+                    <div class="video-thumbnail">
+                        <img src="imgs/deltarune2.png" alt="三角符文第二章第13集">
+                        <div class="video-duration">31:40</div>
+                        <div class="play-btn">▶</div>
+                    </div>
+                    <div class="video-info">
+                        <div class="video-title">第2章第13集</div>
+                        <div class="video-meta">
+                            <span class="video-date">已发布 2021年11月26日 21:34</span>
+                            <span class="video-game-tag">Deltarune</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="video-item" data-game="deltarune" data-chapter="2" video_id="7282763015366249740">
+                    <div class="video-thumbnail">
+                        <img src="imgs/deltarune2.png" alt="三角符文第二章第14集">
+                        <div class="video-duration">29:55</div>
+                        <div class="play-btn">▶</div>
+                    </div>
+                    <div class="video-info">
+                        <div class="video-title">第2章第14集</div>
+                        <div class="video-meta">
+                            <span class="video-date">已发布 2021年11月26日 21:34</span>
+                            <span class="video-game-tag">Deltarune</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="video-item" data-game="deltarune" data-chapter="2" video_id="7293153434906283303">
+                    <div class="video-thumbnail">
+                        <img src="imgs/deltarune2.png" alt="三角符文第二章第15集">
+                        <div class="video-duration">34:10</div>
+                        <div class="play-btn">▶</div>
+                    </div>
+                    <div class="video-info">
+                        <div class="video-title">第2章第15集</div>
+                        <div class="video-meta">
+                            <span class="video-date">已发布 2021年11月26日 21:34</span>
+                            <span class="video-game-tag">Deltarune</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="video-item" data-game="deltarune" data-chapter="2" video_id="7318789082652364082">
+                    <div class="video-thumbnail">
+                        <img src="imgs/deltarune2.png" alt="三角符文第二章第16集">
+                        <div class="video-duration">32:25</div>
+                        <div class="play-btn">▶</div>
+                    </div>
+                    <div class="video-info">
+                        <div class="video-title">第2章冰封线第1集</div>
+                        <div class="video-meta">
+                            <span class="video-date">已发布 2021年11月26日 21:34</span>
+                            <span class="video-game-tag">Deltarune</span>
+                            <span class="video-game-tag ice-route">冰封线</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="video-item" data-game="deltarune" data-chapter="2" video_id="7329519728119024907">
+                    <div class="video-thumbnail">
+                        <img src="imgs/deltarune2.png" alt="三角符文第二章第17集">
+                        <div class="video-duration">30:10</div>
+                        <div class="play-btn">▶</div>
+                    </div>
+                    <div class="video-info">
+                        <div class="video-title">第2章冰封线第2集</div>
+                        <div class="video-meta">
+                            <span class="video-date">已发布 2021年11月26日 21:34</span>
+                            <span class="video-game-tag">Deltarune</span>
+                            <span class="video-game-tag ice-route">冰封线</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="video-item" data-game="deltarune" data-chapter="2" video_id="7342507764947717426">
+                    <div class="video-thumbnail">
+                        <img src="imgs/deltarune2.png" alt="三角符文第二章第18集">
+                        <div class="video-duration">33:40</div>
+                        <div class="play-btn">▶</div>
+                    </div>
+                    <div class="video-info">
+                        <div class="video-title">第2章冰封线第3集</div>
+                        <div class="video-meta">
+                            <span class="video-date">已发布 2021年11月26日 21:34</span>
+                            <span class="video-game-tag">Deltarune</span>
+                            <span class="video-game-tag ice-route">冰封线</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="video-item" data-game="deltarune" data-chapter="2" video_id="7358093166630800650">
+                    <div class="video-thumbnail">
+                        <img src="imgs/deltarune2.png" alt="三角符文第二章第19集">
+                        <div class="video-duration">35:50</div>
+                        <div class="play-btn">▶</div>
+                    </div>
+                    <div class="video-info">
+                        <div class="video-title">第2章冰封线第4集</div>
+                        <div class="video-meta">
+                            <span class="video-date">已发布 2021年11月26日 21:34</span>
+                            <span class="video-game-tag">Deltarune</span>
+                            <span class="video-game-tag ice-route">冰封线</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 第三章视频 -->
+                <div class="video-item" data-game="deltarune" data-chapter="3" video_id="7520956914348346662">
+                    <div class="video-thumbnail">
+                        <img src="imgs/deltarune3.png" alt="三角符文第三章第1集">
+                        <div class="video-duration">40:20</div>
+                        <div class="play-btn">▶</div>
+                    </div>
+                    <div class="video-info">
+                        <div class="video-title">第3章第1集</div>
+                        <div class="video-meta">
+                            <span class="video-date">已发布 2021年11月26日 21:34</span>
+                            <span class="video-game-tag">Deltarune</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="video-item" data-game="deltarune" data-chapter="3" video_id="7525764175956692258">
+                    <div class="video-thumbnail">
+                        <img src="imgs/deltarune3.png" alt="三角符文第三章第2集">
+                        <div class="video-duration">38:15</div>
+                        <div class="play-btn">▶</div>
+                    </div>
+                    <div class="video-info">
+                        <div class="video-title">第3章第2集</div>
+                        <div class="video-meta">
+                            <span class="video-date">已发布 2021年11月26日 21:34</span>
+                            <span class="video-game-tag">Deltarune</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="video-item" data-game="deltarune" data-chapter="3" video_id="7529408330104671540">
+                    <div class="video-thumbnail">
+                        <img src="imgs/deltarune3.png" alt="三角符文第三章第3集">
+                        <div class="video-duration">42:30</div>
+                        <div class="play-btn">▶</div>
+                    </div>
+                    <div class="video-info">
+                        <div class="video-title">第3章第3集</div>
+                        <div class="video-meta">
+                            <span class="video-date">已发布 2021年11月26日 21:34</span>
+                            <span class="video-game-tag">Deltarune</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="video-item" data-game="deltarune" data-chapter="3" video_id="7531766336058314036">
+                    <div class="video-thumbnail">
+                        <img src="imgs/deltarune3.png" alt="三角符文第三章第4集">
+                        <div class="video-duration">39:15</div>
+                        <div class="play-btn">▶</div>
+                    </div>
+                    <div class="video-info">
+                        <div class="video-title">第3章第4集</div>
+                        <div class="video-meta">
+                            <span class="video-date">已发布 2021年11月26日 21:34</span>
+                            <span class="video-game-tag">Deltarune</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="video-item" data-game="deltarune" data-chapter="3" video_id="7534685131362143551">
+                    <div class="video-thumbnail">
+                        <img src="imgs/deltarune3.png" alt="三角符文第三章第5集">
+                        <div class="video-duration">41:20</div>
+                        <div class="play-btn">▶</div>
+                    </div>
+                    <div class="video-info">
+                        <div class="video-title">第3章第5集</div>
+                        <div class="video-meta">
+                            <span class="video-date">已发布 2021年11月26日 21:34</span>
+                            <span class="video-game-tag">Deltarune</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="video-item" data-game="deltarune" data-chapter="3" video_id="7537285780528467242">
+                    <div class="video-thumbnail">
+                        <img src="imgs/deltarune3.png" alt="三角符文第三章第6集">
+                        <div class="video-duration">43:35</div>
+                        <div class="play-btn">▶</div>
+                    </div>
+                    <div class="video-info">
+                        <div class="video-title">第3章第6集</div>
+                        <div class="video-meta">
+                            <span class="video-date">已发布 2021年11月26日 21:34</span>
+                            <span class="video-game-tag">Deltarune</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 第四章视频（0个） -->
+                
+                <!-- 剧情分析视频 -->
+                <div class="video-item" data-game="deltarune" data-chapter="analysis" video_id="7376276316502412607" data-spoiler="true">
+                    <div class="video-thumbnail">
+                        <img src="imgs/deltarune-analysis.webp" alt="三角符文剧情分析">
+                        <div class="video-duration">6:36</div>
+                        <div class="play-btn">▶</div>
+                    </div>
+                    <div class="video-info">
+                        <div class="video-title">剧情分析</div>
+                        <div class="video-meta">
+                            <span class="video-date">已发布 2024年6月3日 22:00</span>
+                            <span class="video-game-tag">Deltarune</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 自定义确认框模态框 -->
+    <div id="custom-confirm" class="custom-confirm-modal">
+        <div class="custom-confirm-overlay"></div>
+        <div class="custom-confirm-content">
+            <div class="custom-confirm-title">警告</div>
+            <div class="custom-confirm-message">此视频包含剧透内容！</div>
+            <div class="custom-confirm-buttons">
+                <button id="confirm-cancel" class="custom-confirm-btn custom-confirm-cancel">取消</button>
+                <button id="confirm-ok" class="custom-confirm-btn custom-confirm-ok">确定</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/script.js"></script>
+</body>
+</html>
