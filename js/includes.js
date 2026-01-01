@@ -52,6 +52,14 @@ function loadAllIncludes(pageTitle, activeNav) {
             if (typeof initMobileMenu === 'function') {
                 initMobileMenu();
             }
+            // 导航栏加载完成后初始化设置菜单
+            if (typeof initSettingsMenu === 'function') {
+                initSettingsMenu();
+            }
+            // 导航栏加载完成后初始化声音设置
+            if (typeof initSoundSettings === 'function') {
+                initSoundSettings();
+            }
         });
     
     // 加载页脚
@@ -66,6 +74,8 @@ function loadAllIncludes(pageTitle, activeNav) {
             }
         });
 }
+
+
 
 // 简化的加载函数，用于页面调用
 function initPage(pageTitle, activeNav) {

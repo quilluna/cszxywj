@@ -1,11 +1,9 @@
-/* 重置样式 */
-* {
+﻿* {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
-/* 引入自定义字体 */
 @font-face {
     font-family: 'CustomFont';
     src: url('../fonts/font.ttf') format('truetype');
@@ -15,7 +13,6 @@
 
 /* 基础样式和变量 */
 :root {
-    /* 颜色变量 - 清新现代配色 */
     --primary-blue: #2563EB;
     --primary-purple: #7C3AED;
     --primary-cyan: #06B6D4;
@@ -92,16 +89,34 @@ body {
     background-color: var(--light-bg);
     color: var(--text-dark);
     line-height: 1.7;
-    background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('../imgs/background.png');
+    background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('../imgs/bg_dr.jpg');
     background-size: cover;
     background-position: center;
     background-attachment: scroll;
     min-height: 100vh;
+    transition: background-image var(--transition-slow);
 }
 
-/* 深色模式下的body样式 */
+/* 默认背景样式（浅色模式） */
+body.bg_ut {
+    background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('../imgs/bg_ut.jpg');
+}
+
+body.bg_dr {
+    background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('../imgs/bg_dr.jpg');
+}
+
+/* 深色模式下的背景样式 */
 :root[data-theme="dark"] body {
-    background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('../imgs/background.png');
+    background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('../imgs/bg_dr.jpg');
+}
+
+:root[data-theme="dark"] body.bg_ut {
+    background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('../imgs/bg_ut.jpg');
+}
+
+:root[data-theme="dark"] body.bg_dr {
+    background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('../imgs/bg_dr.jpg');
 }
 
 p {
@@ -210,22 +225,6 @@ p {
     height: 16px;
 }
 
-.hamburger {
-    display: none;
-    flex-direction: column;
-    cursor: pointer;
-}
-
-.hamburger span {
-    width: 25px;
-    height: 2px;
-    background-color: var(--text-dark);
-    margin: 3px 0;
-    transition: 0.3s;
-}
-
-/* 深色模式开关样式 */
-
 /* 隐藏类 */
 .hidden {
     display: none !important;
@@ -330,12 +329,6 @@ p {
     min-width: 100px;
 }
 
-.game-option:hover {
-    background-color: var(--secondary-purple);
-    transform: translateY(-2px);
-    box-shadow: 0 0 20px var(--primary-purple), var(--shadow-md);
-}
-
 /* 游戏封面按钮公共样式 */
 .game-option-with-cover {
     min-width: 300px;
@@ -393,12 +386,12 @@ p {
 
 /* 传说之下按钮特殊样式 */
 .game-option-undertale {
-    background-image: url('../imgs/undertale.jpeg');
+    background-image: url('../imgs/undertale.jpg');
 }
 
 /* 三角符文按钮特殊样式 */
 .game-option-deltarune {
-    background-image: url('../imgs/deltarune.jpeg');
+    background-image: url('../imgs/deltarune.jpg');
 }
 
 /* 游戏封面按钮悬停样式 */
@@ -455,6 +448,7 @@ p {
     min-width: 100px;
 }
 
+.game-option:hover,
 .chapter-option:hover {
     background-color: var(--secondary-purple);
     transform: translateY(-2px);
@@ -890,10 +884,10 @@ p {
 .theme-btn {
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     width: 50px;
     height: 28px;
-    background: linear-gradient(135deg, var(--primary-blue), var(--primary-purple));
+    background: #e0e0e0;
     border: none;
     border-radius: 20px;
     cursor: pointer;
@@ -904,6 +898,28 @@ p {
     display: none;
 }
 
+.theme-btn::after {
+    content: '';
+    position: absolute;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: white;
+    left: 3px;
+    top: 3px;
+    transition: all var(--transition-normal);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.theme-btn.active {
+    background: #5c0572;
+    justify-content: flex-end;
+}
+
+.theme-btn.active::after {
+    left: calc(100% - 25px);
+}
+
 .theme-btn:hover {
     transform: scale(1.05);
     box-shadow: var(--shadow-md);
@@ -911,21 +927,220 @@ p {
 
 .theme-btn .sun-icon,
 .theme-btn .moon-icon {
+    display: none;
+}
+
+/* 设置按钮样式 */
+.settings-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background: transparent;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 20px;
+    transition: all var(--transition-normal);
+    position: relative;
+}
+
+.settings-btn:hover {
+    background: var(--border-light);
+    transform: scale(1.1);
+}
+
+/* 设置菜单容器 */
+.settings-container {
+    position: relative;
+}
+
+/* 设置菜单样式 */
+.settings-menu {
     position: absolute;
-    font-size: 14px;
+    top: 100%;
+    right: 0;
+    margin-top: var(--spacing-xs);
+    background: var(--card-bg);
+    border: 1px solid var(--border-light);
+    border-radius: var(--border-radius-sm);
+    box-shadow: var(--shadow-lg);
+    padding: var(--spacing-sm);
+    min-width: 200px;
+    z-index: 1001;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
     transition: all var(--transition-normal);
 }
 
-.theme-btn .sun-icon {
-    left: 6px;
+/* 设置菜单显示状态 */
+.settings-menu.active {
     opacity: 1;
-    transform: scale(1);
+    visibility: visible;
+    transform: translateY(0);
 }
 
-.theme-btn .moon-icon {
-    right: 6px;
-    opacity: 0;
-    transform: scale(0.8);
+/* 设置分类容器 */
+.settings-category {
+    margin-bottom: var(--spacing-sm);
+}
+
+/* 设置分类标题 */
+.settings-category-title {
+    font-size: 0.8rem;
+    font-weight: var(--title-font-weight);
+    color: var(--text-medium);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: var(--spacing-xs);
+    padding-left: var(--spacing-xs);
+}
+
+/* 设置菜单项样式 */
+.settings-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-xs) 0;
+    flex-wrap: wrap;
+}
+
+/* 背景音乐设置项特殊样式 */
+.settings-item:nth-child(2) {
+    gap: var(--spacing-sm);
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+/* 标签和开关容器 */
+.settings-item:nth-child(2) .label-toggle-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-bottom: var(--spacing-xs);
+}
+
+.settings-item:nth-child(2) .music-selector {
+    width: 100%;
+}
+
+/* 设置标签样式 */
+.settings-label {
+    font-size: 0.9rem;
+    color: var(--text-dark);
+    font-weight: var(--subtitle-font-weight);
+}
+
+/* 切换按钮样式（用于音乐和音效） */
+.toggle-btn {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: 50px;
+    height: 28px;
+    background: #e0e0e0;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    position: relative;
+    transition: all var(--transition-normal);
+    box-shadow: var(--shadow-sm);
+    padding: 0;
+}
+
+.toggle-btn::after {
+    content: '';
+    position: absolute;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: white;
+    left: 3px;
+    top: 3px;
+    transition: all var(--transition-normal);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.toggle-btn.active {
+    background: #5c0572;
+    justify-content: flex-end;
+}
+
+.toggle-btn.active::after {
+    left: calc(100% - 25px);
+}
+
+.toggle-btn:hover {
+    transform: scale(1.05);
+    box-shadow: var(--shadow-md);
+}
+
+.toggle-btn .music-on-icon,
+.toggle-btn .music-off-icon,
+.toggle-btn .sound-on-icon,
+.toggle-btn .sound-off-icon {
+    display: none;
+}
+
+/* 深色模式下的切换按钮样式 */
+:root[data-theme="dark"] .toggle-btn {
+    background: #333;
+}
+
+:root[data-theme="dark"] .toggle-btn.active {
+    background: #5c0572;
+}
+
+:root[data-theme="dark"] .toggle-btn::after {
+    background: #f0f0f0;
+}
+
+/* 音乐选择器样式 */
+.music-selector {
+    margin-left: 0;
+    display: none;
+}
+
+.music-selector select {
+    background-color: var(--card-bg);
+    color: var(--text-dark);
+    border: 1px solid var(--border-light);
+    border-radius: var(--border-radius-sm);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all var(--transition-normal);
+    outline: none;
+}
+
+.music-selector select:hover {
+    border-color: var(--primary-purple);
+    box-shadow: var(--shadow-sm);
+}
+
+.music-selector select:focus {
+    border-color: var(--primary-purple);
+    box-shadow: 0 0 0 2px rgba(92, 5, 114, 0.2);
+}
+
+/* 深色模式下的音乐选择器样式 */
+:root[data-theme="dark"] .music-selector select {
+    background-color: var(--card-bg);
+    color: var(--text-light);
+    border-color: var(--border-dark);
+}
+
+/* 深色模式下的设置菜单样式 */
+:root[data-theme="dark"] .settings-menu {
+    background: var(--card-bg);
+    border-color: var(--border-light);
+}
+
+:root[data-theme="dark"] .settings-label {
+    color: var(--text-dark);
 }
 
 /* 深色模式下的开关样式 */

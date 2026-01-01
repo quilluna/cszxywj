@@ -155,6 +155,15 @@
             const game = urlParams.get('game');
             const chapter = urlParams.get('chapter');
             
+            // 切换body背景类
+            if (game === 'undertale') {
+                document.body.classList.remove('bg_dr');
+                document.body.classList.add('ut_bg');
+            } else if (game === 'deltarune') {
+                document.body.classList.remove('ut_bg');
+                document.body.classList.add('bg_dr');
+            }
+            
             // 如果没有提供video_id，显示错误信息
             if (!videoId) {
                 document.getElementById('video-title').textContent = '错误：未提供视频ID';

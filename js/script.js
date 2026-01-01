@@ -1,6 +1,6 @@
 // DOM加载完成后执行
 document.addEventListener('DOMContentLoaded', function() {
-    // 初始化所有功能（initDarkMode和initMobileMenu会在导航栏加载完成后自动初始化）
+    // 初始化所有功能（initDarkMode、initMobileMenu和initSettingsMenu会在导航栏加载完成后自动初始化）
     initVideoFilter();
     initResourceFilter();
     initScrollAnimation();
@@ -10,6 +10,8 @@ document.addEventListener('DOMContentLoaded', function() {
     initChapterSelection();
     initMobileTopBarToggle();
     initCustomConfirm();
+    // 加载推荐视频
+    loadRecommendedVideos();
 });
 
 // 初始化运行时间计数器
@@ -102,11 +104,32 @@ function hideCustomConfirm() {
 }
 
 // 自定义确认函数，模拟原生confirm的使用方式
-function customConfirm(message) {
+function customConfirm(message, title = '提示', confirmText = '确定', cancelText = '取消') {
     return new Promise((resolve) => {
+        const confirmTitle = document.querySelector('.custom-confirm-title');
         const confirmMessage = document.querySelector('.custom-confirm-message');
+        const confirmOkBtn = document.getElementById('confirm-ok');
+        const confirmCancelBtn = document.getElementById('confirm-cancel');
+        
+        if (confirmTitle) {
+            confirmTitle.textContent = title;
+        }
+        
         if (confirmMessage) {
             confirmMessage.textContent = message;
+        }
+        
+        if (confirmOkBtn) {
+            confirmOkBtn.textContent = confirmText;
+        }
+        
+        if (confirmCancelBtn) {
+            if (cancelText) {
+                confirmCancelBtn.textContent = cancelText;
+                confirmCancelBtn.style.display = 'inline-block';
+            } else {
+                confirmCancelBtn.style.display = 'none';
+            }
         }
         
         showCustomConfirm(resolve);
@@ -180,6 +203,15 @@ function initGameSelection() {
         gameOptions.forEach(option => {
             option.addEventListener('click', function() {
                 const game = this.dataset.game;
+                
+                // 切换body背景类
+                if (game === 'undertale') {
+                    document.body.classList.remove('bg_dr');
+                    document.body.classList.add('bg_ut');
+                } else if (game === 'deltarune') {
+                    document.body.classList.remove('bg_ut');
+                    document.body.classList.add('bg_dr');
+                }
                 
                 // 为选择框添加渐隐效果
                 gameSelector.classList.add('fade-out');
@@ -329,12 +361,42 @@ function filterVideos(game, chapter) {
     }
 }
 
+// 设置菜单功能
+function initSettingsMenu() {
+    const settingsBtn = document.getElementById('settingsBtn');
+    const settingsMenu = document.getElementById('settingsMenu');
+    
+    if (!settingsBtn || !settingsMenu) return;
+    
+    // 点击设置按钮切换菜单显示状态
+    settingsBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        settingsMenu.classList.toggle('active');
+    });
+    
+    // 点击页面其他地方关闭设置菜单
+    document.addEventListener('click', (e) => {
+        if (!settingsBtn.contains(e.target) && !settingsMenu.contains(e.target)) {
+            settingsMenu.classList.remove('active');
+        }
+    });
+}
+
 // 深色模式切换功能
 function initDarkMode() {
     const themeToggle = document.getElementById('themeToggle');
     const root = document.documentElement;
     
     if (!themeToggle) return;
+    
+    // 更新主题按钮状态
+    function updateThemeButton(theme) {
+        if (theme === 'dark') {
+            themeToggle.classList.add('active');
+        } else {
+            themeToggle.classList.remove('active');
+        }
+    }
     
     // 检查本地存储或系统偏好
     const savedTheme = localStorage.getItem('theme');
@@ -343,6 +405,7 @@ function initDarkMode() {
     // 设置初始主题（强制使用深色模式）
     const initialTheme = 'dark';
     root.setAttribute('data-theme', initialTheme);
+    updateThemeButton(initialTheme);
     
     // 添加点击事件监听器
     themeToggle.addEventListener('click', () => {
@@ -352,6 +415,7 @@ function initDarkMode() {
         
         // 更新主题
         root.setAttribute('data-theme', newTheme);
+        updateThemeButton(newTheme);
         
         // 保存到本地存储
         localStorage.setItem('theme', newTheme);
@@ -369,9 +433,17 @@ function initDarkMode() {
         if (!localStorage.getItem('theme')) {
             const newTheme = e.matches ? 'dark' : 'light';
             root.setAttribute('data-theme', newTheme);
+            updateThemeButton(newTheme);
         }
     });
 }
+
+
+
+
+
+
+
 
 // 移动端汉堡菜单功能
 function initMobileMenu() {
@@ -646,6 +718,12 @@ function animateVideoItems() {
                 const chapter = this.dataset.chapter;
                 const videoId = this.getAttribute('video_id');
                 
+                // 检查是否为异常视频（热域视频，video_id为空或包含异常状态）
+                if (!videoId || this.querySelector('.status-warning')) {
+                    await customConfirm('此视频状态异常，不可播放', '错误', '知道了', '');
+                    return; // 不执行跳转
+                }
+                
                 // 构建URL参数
                 const urlParams = new URLSearchParams({
                     title: encodeURIComponent(title),
@@ -678,6 +756,12 @@ function animateVideoItems() {
                     const game = item.dataset.game;
                     const chapter = item.dataset.chapter;
                     const videoId = item.getAttribute('video_id');
+                    
+                    // 检查是否为异常视频（热域视频，video_id为空或包含异常状态）
+                    if (!videoId || item.querySelector('.status-warning')) {
+                        await customConfirm('此视频不可跳转', '提示', '知道了', '');
+                        return; // 不执行跳转
+                    }
                     
                     // 构建URL参数
                     const urlParams = new URLSearchParams({
@@ -940,6 +1024,146 @@ function addClickFeedback() {
                 isButton = true;
                 e.stopPropagation(); // 阻止事件冒泡到父元素
             }
+
+// 随机显示推荐视频
+function loadRecommendedVideos() {
+    // 从content.html获取视频内容
+    fetch('content.html')
+        .then(response => response.text())
+        .then(html => {
+            // 创建临时DOM元素来解析HTML
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = html;
+            
+            // 获取所有视频项
+            const allVideos = tempDiv.querySelectorAll('.video-item');
+            
+            // 如果没有视频，不执行后续操作
+            if (allVideos.length === 0) return;
+            
+            // 随机选择4-6个视频
+            const videoCount = Math.floor(Math.random() * 3) + 4; // 4-6个视频
+            const shuffledVideos = Array.from(allVideos).sort(() => 0.5 - Math.random());
+            const selectedVideos = shuffledVideos.slice(0, videoCount);
+            
+            // 获取推荐视频容器
+            const container = document.querySelector('.popular-videos .container');
+            if (!container) return;
+            
+            // 移除"暂无推荐视频"文本
+            const noVideosText = container.querySelector('.no-videos');
+            if (noVideosText) {
+                noVideosText.remove();
+            }
+            
+            // 创建视频网格
+            let videosHTML = '<div class="video-grid">';
+            selectedVideos.forEach(video => {
+                videosHTML += video.outerHTML;
+            });
+            videosHTML += '</div>';
+            
+            // 插入视频到容器
+            container.innerHTML += videosHTML;
+            
+            // 为推荐视频添加动画效果
+            setTimeout(() => {
+                const videoItems = container.querySelectorAll('.video-item');
+                videoItems.forEach((item, index) => {
+                    item.classList.add('fade-in');
+                    item.style.opacity = '0';
+                    item.style.transform = 'translateY(20px)';
+                    
+                    setTimeout(() => {
+                        item.style.opacity = '1';
+                        item.style.transform = 'translateY(0)';
+                    }, index * 100);
+                });
+            }, 100);
+            
+            // 为推荐视频添加点击事件
+            const videoItems = container.querySelectorAll('.video-item');
+            videoItems.forEach(item => {
+                item.addEventListener('click', async function() {
+                    // 检查是否为剧透视频，如果是则显示二次确认
+                    if (this.dataset.spoiler === 'true') {
+                        const isConfirmed = await customConfirm('警告：此视频包含剧透内容！\n\n确定要继续观看吗？');
+                        if (!isConfirmed) {
+                            return; // 用户取消，不执行跳转
+                        }
+                    }
+                    
+                    const title = this.querySelector('.video-title').textContent;
+                    const date = this.querySelector('.video-date')?.textContent;
+                    const game = this.dataset.game;
+                    const chapter = this.dataset.chapter;
+                    const videoId = this.getAttribute('video_id');
+                    
+                    // 检查是否为异常视频（video_id为空或包含异常状态）
+                    if (!videoId || this.querySelector('.status-warning')) {
+                        await customConfirm('此视频状态异常，不可播放', '错误', '知道了', '');
+                        return; // 不执行跳转
+                    }
+                    
+                    // 构建URL参数
+                    const urlParams = new URLSearchParams({
+                        title: encodeURIComponent(title),
+                        date: date ? encodeURIComponent(date) : '',
+                        game: encodeURIComponent(game),
+                        chapter: encodeURIComponent(chapter),
+                        video_id: encodeURIComponent(videoId)
+                    });
+                    
+                    // 跳转到播放器页面
+                    window.location.href = `player.html?${urlParams.toString()}`;
+                });
+                
+                // 为播放按钮添加点击事件
+                const playBtn = item.querySelector('.play-btn');
+                if (playBtn) {
+                    playBtn.addEventListener('click', async function(e) {
+                        e.stopPropagation();
+                        
+                        const videoItem = this.closest('.video-item');
+                        if (!videoItem) return;
+                        
+                        // 检查是否为剧透视频，如果是则显示二次确认
+                        if (videoItem.dataset.spoiler === 'true') {
+                            const isConfirmed = await customConfirm('警告：此视频包含剧透内容！\n\n确定要继续观看吗？');
+                            if (!isConfirmed) {
+                                return; // 用户取消，不执行跳转
+                            }
+                        }
+                        
+                        const title = videoItem.querySelector('.video-title').textContent;
+                        const date = videoItem.querySelector('.video-date')?.textContent;
+                        const game = videoItem.dataset.game;
+                        const chapter = videoItem.dataset.chapter;
+                        const videoId = videoItem.getAttribute('video_id');
+                        
+                        // 检查是否为异常视频（video_id为空或包含异常状态）
+                        if (!videoId || videoItem.querySelector('.status-warning')) {
+                            await customConfirm('此视频不可跳转', '提示', '知道了', '');
+                            return; // 不执行跳转
+                        }
+                        
+                        // 构建URL参数
+                        const urlParams = new URLSearchParams({
+                            title: encodeURIComponent(title),
+                            date: date ? encodeURIComponent(date) : '',
+                            game: encodeURIComponent(game),
+                            chapter: encodeURIComponent(chapter),
+                            video_id: encodeURIComponent(videoId)
+                        });
+                        
+                        // 跳转到播放器页面
+                        window.location.href = `player.html?${urlParams.toString()}`;
+                    });
+                }
+            });
+        })
+        .catch(error => console.error('加载推荐视频失败:', error));
+}
             
             // 创建点击效果元素
             const ripple = document.createElement('span');
@@ -1135,3 +1359,103 @@ function initStatusWarningTips() {
 
 // 初始化移动端提示功能
 document.addEventListener('DOMContentLoaded', initStatusWarningTips);
+
+// 随机显示推荐视频
+function loadRecommendedVideos() {
+    // 从content.html获取视频内容
+    fetch('content.html')
+        .then(response => response.text())
+        .then(html => {
+            // 创建临时DOM元素来解析HTML
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = html;
+            
+            // 获取所有视频项
+            const allVideos = tempDiv.querySelectorAll('.video-item');
+            
+            // 如果没有视频，不执行后续操作
+            if (allVideos.length === 0) return;
+            
+            // 随机选择4-6个视频
+            const videoCount = Math.floor(Math.random() * 3) + 4; // 4-6个视频
+            const shuffledVideos = Array.from(allVideos).sort(() => 0.5 - Math.random());
+            const selectedVideos = shuffledVideos.slice(0, videoCount);
+            
+            // 获取推荐视频容器
+            const container = document.querySelector('.popular-videos .container');
+            if (!container) return;
+            
+            // 移除"暂无推荐视频"文本
+            const noVideosText = container.querySelector('.no-videos');
+            if (noVideosText) {
+                noVideosText.remove();
+            }
+            
+            // 创建视频网格
+            let videosHTML = '<div class="video-grid">';
+            selectedVideos.forEach(video => {
+                videosHTML += video.outerHTML;
+            });
+            videosHTML += '</div>';
+            
+            // 插入视频到容器
+            container.innerHTML += videosHTML;
+            
+            // 为推荐视频添加动画效果
+            setTimeout(() => {
+                const videoItems = container.querySelectorAll('.video-item');
+                videoItems.forEach((item, index) => {
+                    item.classList.add('fade-in');
+                    item.style.opacity = '0';
+                    item.style.transform = 'translateY(20px)';
+                    
+                    setTimeout(() => {
+                        item.style.opacity = '1';
+                        item.style.transform = 'translateY(0)';
+                    }, index * 100);
+                });
+            }, 100);
+            
+            // 为推荐视频添加点击事件
+            const videoItems = container.querySelectorAll('.video-item');
+            videoItems.forEach(item => {
+                // 视频项点击事件
+                item.addEventListener('click', function() {
+                    const videoId = this.getAttribute('video_id');
+                    const game = this.dataset.game;
+                    const chapter = this.dataset.chapter;
+                    
+                    // 检查视频ID是否为空或无效
+                    if (!videoId || videoId === '') {
+                        customConfirm('该视频暂无播放资源', '提示', '确定', '');
+                        return;
+                    }
+                    
+                    // 检查是否有警告状态
+                    if (this.querySelector('.status-warning')) {
+                        customConfirm('该视频可能包含剧透内容，确定要继续观看吗？', '警告', '继续观看', '取消')
+                            .then(result => {
+                                if (result) {
+                                    // 跳转到播放页面
+                                    window.location.href = `player.html?video_id=${videoId}&game=${game}&chapter=${chapter}`;
+                                }
+                            });
+                    } else {
+                        // 跳转到播放页面
+                        window.location.href = `player.html?video_id=${videoId}&game=${game}&chapter=${chapter}`;
+                    }
+                });
+                
+                // 播放按钮点击事件
+                const playBtn = item.querySelector('.play-btn');
+                if (playBtn) {
+                    playBtn.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        // 触发视频项的点击事件
+                        item.click();
+                    });
+                }
+            });
+        })
+        .catch(error => console.error('加载推荐视频失败:', error));
+}
