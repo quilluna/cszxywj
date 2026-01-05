@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=0.45, maximum-scale=1, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>传说之下攻略站 - Undertale & Deltarune</title>
     <link rel="stylesheet" href="css/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
@@ -34,12 +34,10 @@
         <section class="update-section">
             <div class="container">
                 <div class="update-card">
+                    <div id="notifications-container"></div>
+                    
                     <div class="profile预告">
                         <h4>📢 更新预告</h4>
-                        <div class="warn-card">
-                            <h4>⚠️ 通知</h4>
-                            <p>暂时停更中，感谢大家的支持和理解！</p>
-                        </div>
                         <div class="update-subcard">
                             <h5 class="update-title">三角符文第四章 p1 攻略</h5>
                             <p class="update-time" data-status="pending">更新时间待定</p>
@@ -63,25 +61,27 @@
                     return;
                 }
                 
-                // 设置下次更新时间
-                const nextUpdateTime = new Date('2025-08-11 22:00:00').getTime();
-                const now = new Date().getTime();
-                const timeRemaining = nextUpdateTime - now;
+                // 从全局updatePreviewData获取下次更新时间
+                if (typeof updatePreviewData !== 'undefined' && updatePreviewData.time && updatePreviewData.time !== 'pending') {
+                    const nextUpdateTime = new Date(updatePreviewData.time).getTime();
+                    const now = new Date().getTime();
+                    const timeRemaining = nextUpdateTime - now;
 
-                if (timeRemaining <= 0) {
-                    document.getElementById('countdown-timer').innerHTML = '视频已更新！';
-                    return;
+                    if (timeRemaining <= 0) {
+                        document.getElementById('countdown-timer').innerHTML = '视频已更新！';
+                        return;
+                    }
+
+                    // 计算天、时、分、秒
+                    const days = Math.floor(timeRemaining / (1000 * 60 * 60 * 24));
+                    const hours = Math.floor((timeRemaining % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    const minutes = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
+                    const seconds = Math.floor((timeRemaining % (1000 * 60)) / 1000);
+
+                    // 格式化显示
+                    const countdownString = `剩 ${days} 天 ${hours} 时 ${minutes} 分 ${seconds} 秒`;
+                    document.getElementById('countdown-timer').innerHTML = countdownString;
                 }
-
-                // 计算天、时、分、秒
-                const days = Math.floor(timeRemaining / (1000 * 60 * 60 * 24));
-                const hours = Math.floor((timeRemaining % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                const minutes = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
-                const seconds = Math.floor((timeRemaining % (1000 * 60)) / 1000);
-
-                // 格式化显示
-                const countdownString = `剩${days}天 ${hours}时 ${minutes}分 ${seconds}秒`;
-                document.getElementById('countdown-timer').innerHTML = countdownString;
             }
 
             // 初始调用一次
@@ -101,6 +101,19 @@
             </div>
         </section>
     </main>
+
+    <!-- 警告模态框 -->
+    <div id="custom-confirm" class="custom-confirm-modal">
+        <div class="custom-confirm-overlay"></div>
+        <div class="custom-confirm-content">
+            <div class="custom-confirm-title">警告</div>
+            <div class="custom-confirm-message">此视频包含剧透内容！</div>
+            <div class="custom-confirm-buttons">
+                <button id="confirm-cancel" class="custom-confirm-btn custom-confirm-cancel">取消</button>
+                <button id="confirm-ok" class="custom-confirm-btn custom-confirm-ok">确定</button>
+            </div>
+        </div>
+    </div>
 
     <script src="js/script.js"></script>
 </body>

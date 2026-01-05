@@ -1,18 +1,227 @@
+// 全局数据
+let allVideosData = [];
+let allNotificationsData = [];
+let updatePreviewData = {};
+
+// 从Cloudflare Functions API加载数据
+async function loadVideosData() {
+    try {
+        const response = await fetch('/api/fetch_data');
+        if (!response.ok) {
+            throw new Error('网络请求失败');
+        }
+        const data = await response.json();
+        allVideosData = data.videos || [];
+        allNotificationsData = data.notifications || [];
+        updatePreviewData = data.update_preview || {};
+        return { videos: allVideosData, notifications: allNotificationsData, updatePreview: updatePreviewData };
+    } catch (error) {
+        console.error('加载数据失败:', error);
+        // 错误时回退到本地数据
+        try {
+            const localResponse = await fetch('data.json');
+            if (localResponse.ok) {
+                const localData = await localResponse.json();
+                allVideosData = localData.videos || [];
+                allNotificationsData = localData.notifications || [];
+                updatePreviewData = localData.update_preview || {};
+                
+                // 显示警告模态框
+                setTimeout(() => {
+                    const modal = document.getElementById('custom-confirm');
+                    if (modal) {
+                        // 格式化本地数据的最后更新日期
+                        const lastUpdatedDate = '2026年1月5日'; // 从本地数据获取或硬编码
+                        const messageElement = document.querySelector('.custom-confirm-message');
+                        const titleElement = document.querySelector('.custom-confirm-title');
+                        const cancelBtn = document.getElementById('confirm-cancel');
+                        
+                        if (titleElement) {
+                            titleElement.textContent = '警告';
+                        }
+                        
+                        if (messageElement) {
+                            messageElement.textContent = `无法获取最新数据，已回滚到${lastUpdatedDate}的数据，所以此站点目前的信息很可能已经过时，请联系站点管理员解决此问题。`;
+                        }
+                        
+                        if (cancelBtn) {
+                            cancelBtn.style.display = 'none';
+                        }
+                        
+                        // 使用showCustomConfirm函数显示模态框
+                        showCustomConfirm(() => {});
+                    }
+                }, 1000);
+                
+                return { videos: allVideosData, notifications: allNotificationsData, updatePreview: updatePreviewData };
+            }
+            throw new Error('本地数据请求失败');
+        } catch (localError) {
+            console.error('本地数据加载失败:', localError);
+            return { videos: [], notifications: [], updatePreview: {} };
+        }
+    }
+}
+
+// 将通知数据渲染到容器中
+function renderNotificationsToContainer(notifications, container) {
+    if (!container) return;
+    
+    container.innerHTML = '';
+    
+    if (notifications.length === 0) {
+        container.innerHTML = '<p class="no-notifications">暂无通知</p>';
+        return;
+    }
+    
+    notifications.forEach(notification => {
+        const notificationItem = document.createElement('div');
+        notificationItem.className = `warn-card ${notification.type}`;
+        
+        // 格式化日期，将YYYY-MM-DD转换为YYYY年MM月DD日
+        let formattedDate = '';
+        if (notification.date) {
+            const dateParts = notification.date.split('-');
+            if (dateParts.length === 3) {
+                formattedDate = `${dateParts[0]}年${dateParts[1]}月${dateParts[2]}日`;
+            } else {
+                formattedDate = notification.date;
+            }
+        }
+        
+        notificationItem.innerHTML = `
+            <h4>${notification.title}</h4>
+            <p>${notification.content}</p>
+            ${formattedDate ? `<p class="notification-date">生效日期：${formattedDate}</p>` : ''}
+        `;
+        
+        container.appendChild(notificationItem);
+    });
+}
+
+// 将视频数据渲染到容器中
+function renderVideosToContainer(videos, container) {
+    if (!container) return;
+    
+    container.innerHTML = '';
+    
+    if (videos.length === 0) {
+        container.innerHTML = '<p class="no-videos">暂无视频</p>';
+        return;
+    }
+    
+    videos.forEach(video => {
+        const statusClass = video.status === '异常' ? 'status-warning' : '';
+        const spoilerAttr = video.spoiler ? 'data-spoiler="true"' : '';
+        
+        const videoItem = document.createElement('div');
+        videoItem.className = 'video-item';
+        videoItem.dataset.game = video.game;
+        videoItem.dataset.chapter = video.chapter;
+        videoItem.setAttribute('video_id', video.video_id || '');
+        if (video.spoiler) {
+            videoItem.setAttribute('data-spoiler', 'true');
+        }
+        
+        videoItem.innerHTML = `
+            <div class="video-thumbnail">
+                <img src="${video.thumbnail}" alt="${video.title}">
+                <div class="video-duration">${video.duration}</div>
+                <div class="play-btn">▶</div>
+            </div>
+            <div class="video-info">
+                <div class="video-title">${video.title}</div>
+                <div class="video-meta">
+                    <span class="video-date">
+                        ${video.status === '异常' ? `<span class="${statusClass}" title="${video.error_reason || '审核未通过'}">${video.status}</span>` : video.status} ${video.date}
+                    </span>
+                    <span class="video-game-tag">${video.tags[0]}</span>
+                </div>
+            </div>
+        `;
+        
+        container.appendChild(videoItem);
+    });
+}
+
+// 渲染更新预告时间
+function renderUpdatePreview() {
+    const updateTimeElement = document.querySelector('.update-time');
+    const countdownElement = document.getElementById('countdown-timer');
+    const updateTitleElement = document.querySelector('.update-title');
+    
+    // 更新标题
+    if (updateTitleElement && updatePreviewData.title) {
+        updateTitleElement.textContent = updatePreviewData.title;
+    }
+    
+    // 更新时间
+    if (updateTimeElement) {
+        const status = updatePreviewData.status || (updatePreviewData.time && updatePreviewData.time !== 'pending' ? 'scheduled' : 'pending');
+        
+        if (status === 'scheduled' && updatePreviewData.time && updatePreviewData.time !== 'pending') {
+            updateTimeElement.textContent = `更新时间：${updatePreviewData.time}`;
+            updateTimeElement.dataset.status = 'scheduled';
+        } else {
+            updateTimeElement.textContent = '更新时间待定';
+            updateTimeElement.dataset.status = 'pending';
+        }
+    }
+    
+    // 更新倒计时
+    if (countdownElement && updatePreviewData.time && updatePreviewData.time !== 'pending') {
+        countdownElement.style.display = 'block';
+    }
+}
+
 // DOM加载完成后执行
 document.addEventListener('DOMContentLoaded', function() {
-    // 初始化所有功能（initDarkMode、initMobileMenu和initSettingsMenu会在导航栏加载完成后自动初始化）
-    initVideoFilter();
-    initResourceFilter();
-    initScrollAnimation();
-    initSmoothScroll();
-    initDownloadCounter();
-    initGameSelection();
-    initChapterSelection();
-    initMobileTopBarToggle();
-    initCustomConfirm();
-    // 加载推荐视频
-    loadRecommendedVideos();
+    // 先加载视频数据，再初始化其他功能
+    loadVideosData().then(data => {
+        initVideoFilter();
+        initResourceFilter();
+        initScrollAnimation();
+        initSmoothScroll();
+        initDownloadCounter();
+        initGameSelection();
+        initChapterSelection();
+        initDesktopTopBar();
+        initCustomConfirm();
+        initNotifications();
+        loadRecommendedVideos();
+        renderUpdatePreview(); // 渲染更新预告时间
+    });
+    
+    // 初始化模态框关闭功能
+    const closeModal = document.getElementById('close-modal');
+    const okModal = document.getElementById('ok-modal');
+    const warningModal = document.getElementById('warning-modal');
+    
+    if (closeModal && okModal && warningModal) {
+        closeModal.addEventListener('click', function() {
+            warningModal.style.display = 'none';
+        });
+        
+        okModal.addEventListener('click', function() {
+            warningModal.style.display = 'none';
+        });
+        
+        // 点击模态框外部关闭
+        window.addEventListener('click', function(event) {
+            if (event.target === warningModal) {
+                warningModal.style.display = 'none';
+            }
+        });
+    }
 });
+
+// 初始化通知模块
+function initNotifications() {
+    const notificationContainer = document.getElementById('notifications-container');
+    if (notificationContainer) {
+        renderNotificationsToContainer(allNotificationsData, notificationContainer);
+    }
+}
 
 // 初始化运行时间计数器
 function initRuntimeCounter() {
@@ -47,21 +256,16 @@ function initRuntimeCounter() {
 // 初始化自定义确认框
 function initCustomConfirm() {
     const confirmModal = document.getElementById('custom-confirm');
-    const confirmCancelBtn = document.getElementById('confirm-cancel');
     const confirmOkBtn = document.getElementById('confirm-ok');
     
-    if (!confirmModal || !confirmCancelBtn || !confirmOkBtn) return;
-    
-    // 取消按钮点击事件
-    confirmCancelBtn.addEventListener('click', function() {
-        hideCustomConfirm();
-        window.customConfirmCallback(false);
-    });
+    if (!confirmModal || !confirmOkBtn) return;
     
     // 确定按钮点击事件
     confirmOkBtn.addEventListener('click', function() {
         hideCustomConfirm();
-        window.customConfirmCallback(true);
+        if (window.customConfirmCallback) {
+            window.customConfirmCallback(true);
+        }
     });
     
     // 点击遮罩层关闭确认框
@@ -69,7 +273,9 @@ function initCustomConfirm() {
     if (confirmOverlay) {
         confirmOverlay.addEventListener('click', function() {
             hideCustomConfirm();
-            window.customConfirmCallback(false);
+            if (window.customConfirmCallback) {
+                window.customConfirmCallback(false);
+            }
         });
     }
     
@@ -77,7 +283,9 @@ function initCustomConfirm() {
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape' && confirmModal.classList.contains('active')) {
             hideCustomConfirm();
-            window.customConfirmCallback(false);
+            if (window.customConfirmCallback) {
+                window.customConfirmCallback(false);
+            }
         }
     });
 }
@@ -101,6 +309,19 @@ function hideCustomConfirm() {
     
     // 隐藏确认框
     confirmModal.classList.remove('active');
+    
+    // 重置确认框状态
+    setTimeout(() => {
+        const confirmCancelBtn = document.getElementById('confirm-cancel');
+        if (confirmCancelBtn) {
+            confirmCancelBtn.style.display = 'inline-block';
+        }
+    }, 300);
+    
+    // 移除回调函数
+    setTimeout(() => {
+        window.customConfirmCallback = null;
+    }, 300);
 }
 
 // 自定义确认函数，模拟原生confirm的使用方式
@@ -136,25 +357,13 @@ function customConfirm(message, title = '提示', confirmText = '确定', cancel
     });
 }
 
-// 移动端顶栏切换功能
-function initMobileTopBarToggle() {
-    // 创建切换按钮
-    const toggleBtn = document.createElement('button');
-    toggleBtn.id = 'toggle-top-selector';
-    toggleBtn.className = 'mobile-toggle-btn hidden';
-    toggleBtn.textContent = '显示游戏章节';
-    document.body.appendChild(toggleBtn);
+// 桌面端顶栏显示功能
+function initDesktopTopBar() {
     // 检查是否是移动端视图
     function checkMobileView() {
         const topSelector = document.querySelector('.top-selector');
-        if (window.innerWidth <= 768) {
-            // 移动端默认隐藏切换按钮，只在选择游戏后显示
-            toggleBtn.classList.add('hidden');
-            // 移动端保持当前顶栏选择器状态，不强制显示或隐藏
-        } else {
-            // 桌面端隐藏切换按钮
-            toggleBtn.classList.add('hidden');
-            // 在桌面端确保顶栏选择器可见
+        if (window.innerWidth > 768) {
+            // 桌面端确保顶栏选择器可见
             if (topSelector) {
                 // 先重置状态确保动画能触发
                 topSelector.classList.remove('visible');
@@ -168,15 +377,6 @@ function initMobileTopBarToggle() {
         }
     }
     
-    // 按钮点击事件处理
-    toggleBtn.addEventListener('click', function() {
-        const topSelector = document.querySelector('.top-selector');
-        if (topSelector) {
-            topSelector.classList.toggle('visible');
-            toggleBtn.textContent = topSelector.classList.contains('visible') ? '隐藏游戏章节' : '显示游戏章节';
-        }
-    });
-    
     // 初始检查
     checkMobileView();
     
@@ -184,12 +384,10 @@ function initMobileTopBarToggle() {
     window.addEventListener('resize', checkMobileView);
 }
 
-// 显示移动端顶栏切换按钮
+// 不再显示移动端顶栏切换按钮
 function showMobileTopBarToggle() {
-    const toggleBtn = document.getElementById('toggle-top-selector');
-    if (toggleBtn && window.innerWidth <= 768) {
-        toggleBtn.classList.remove('hidden');
-    }
+    // 移动端不再需要这个按钮
+    return;
 }
 
 // 游戏类型选择逻辑
@@ -218,13 +416,13 @@ function initGameSelection() {
                 
                 // 减少延迟时间，加快过渡
                 setTimeout(() => {
-                        // 隐藏游戏选择器
-                        gameSelector.classList.add('hidden');
-                        // 移除渐隐类和visible类（为下次显示做准备）
-                        gameSelector.classList.remove('fade-out', 'visible');
-                        // 重置透明度和位移，确保下次动画能重新触发
-                        gameSelector.style.opacity = '0';
-                        gameSelector.style.transform = 'translateY(20px)';
+                    // 隐藏游戏选择器
+                    gameSelector.classList.add('hidden');
+                    // 移除渐隐类和visible类（为下次显示做准备）
+                    gameSelector.classList.remove('fade-out', 'visible');
+                    // 重置透明度和位移，确保下次动画能重新触发
+                    gameSelector.style.opacity = '0';
+                    gameSelector.style.transform = 'translateY(20px)';
                     
                     if (game === 'undertale') {
                         // 直接显示传说之下视频
@@ -234,50 +432,52 @@ function initGameSelection() {
                         videoContainer.classList.remove('visible');
                         videoContainer.style.opacity = '0';
                         videoContainer.style.transform = 'translateY(20px)';
-                        // 强制重排
                         videoContainer.offsetHeight;
                         
                         // 显示视频容器
                         videoContainer.classList.remove('hidden');
-                        // 移除fade-out类
                         videoContainer.classList.remove('fade-out');
                         
-                        // 筛选视频
+                        // 筛选并渲染视频
+                        const undertaleVideos = allVideosData.filter(v => v.game === 'undertale');
+                        renderVideosToContainer(undertaleVideos, videoContainer);
+                        
+                        // 筛选视频（用于显示/隐藏逻辑）
                         filterVideos(game, 'all');
                         // 显示顶部选择框
                         showTopSelector('game-selector');
-                        // 立即检查并添加visible类，避免需要滚动才能显示
+                        // 立即检查并添加visible类
                         checkFadeElements();
                         // 视频渐显
                         animateVideoItems();
                     } else if (game === 'deltarune') {
-                // 移除可能存在的返回按钮
-                const existingReturnBtn = document.getElementById('return-to-game-selector');
-                if (existingReturnBtn) {
-                    existingReturnBtn.remove();
-                }
-                // 准备显示章节选择器
-                // 先重置章节选择器的动画状态
-                chapterSelector.classList.remove('visible');
-                chapterSelector.style.opacity = '0';
-                chapterSelector.style.transform = 'translateY(20px)';
-                // 强制重排
-                chapterSelector.offsetHeight;
-                
-                chapterSelector.classList.remove('hidden');
-                
-                // 隐藏视频容器并重置动画
-                videoContainer.classList.add('hidden');
-                videoContainer.classList.remove('visible');
-                videoContainer.style.opacity = '0';
-                videoContainer.style.transform = 'translateY(20px)';
-                
-                // 游戏选择器移到顶部
-                showTopSelector('game-selector');
-                
-                // 立即检查并添加visible类，避免需要滚动才能显示章节选择器
-                checkFadeElements();
-            }
+                        // 移除可能存在的返回按钮
+                        const existingReturnBtn = document.getElementById('return-to-game-selector');
+                        if (existingReturnBtn) {
+                            existingReturnBtn.remove();
+                        }
+                        // 准备显示章节选择器
+                        // 先重置章节选择器的动画状态
+                        chapterSelector.classList.remove('visible');
+                        chapterSelector.style.opacity = '0';
+                        chapterSelector.style.transform = 'translateY(20px)';
+                        // 强制重排
+                        chapterSelector.offsetHeight;
+                        
+                        chapterSelector.classList.remove('hidden');
+                        
+                        // 隐藏视频容器并重置动画
+                        videoContainer.classList.add('hidden');
+                        videoContainer.classList.remove('visible');
+                        videoContainer.style.opacity = '0';
+                        videoContainer.style.transform = 'translateY(20px)';
+                        
+                        // 游戏选择器移到顶部
+                        showTopSelector('game-selector');
+                        
+                        // 立即检查并添加visible类，避免需要滚动才能显示章节选择器
+                        checkFadeElements();
+                    }
                 }, 100);
             });
         });
@@ -315,18 +515,21 @@ function initChapterSelection() {
                     videoContainer.classList.remove('visible');
                     videoContainer.style.opacity = '0';
                     videoContainer.style.transform = 'translateY(20px)';
-                    // 强制重排
                     videoContainer.offsetHeight;
                     
                     // 直接显示视频容器
                     videoContainer.classList.remove('hidden');
-                    // 移除fade-out类
                     videoContainer.classList.remove('fade-out');
+                    
+                    // 筛选并渲染视频
+                    const deltaruneVideos = allVideosData.filter(v => v.game === 'deltarune' && (chapter === 'all' || v.chapter === chapter));
+                    renderVideosToContainer(deltaruneVideos, videoContainer);
+                    
                     // 筛选视频
                     filterVideos('deltarune', chapter);
                     // 显示顶部选择框
                     showTopSelector('chapter-selector');
-                    // 立即检查并添加visible类，避免需要滚动才能显示
+                    // 立即检查并添加visible类
                     checkFadeElements();
                     // 视频渐显
                     animateVideoItems();
@@ -402,8 +605,8 @@ function initDarkMode() {
     const savedTheme = localStorage.getItem('theme');
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     
-    // 设置初始主题（强制使用深色模式）
-    const initialTheme = 'dark';
+    // 设置初始主题
+    const initialTheme = savedTheme || (prefersDark ? 'dark' : 'light');
     root.setAttribute('data-theme', initialTheme);
     updateThemeButton(initialTheme);
     
@@ -534,122 +737,208 @@ function initVideoFilter() {
 // 显示顶部选择框
 function showTopSelector(selectorId) {
     const selector = document.getElementById(selectorId);
+    const videoContainer = document.getElementById('video-container');
+    
     if (selector) {
-        // 确保移除之前可能添加的顶部选择框类
-        document.querySelectorAll('.top-selector').forEach(el => {
-            el.classList.remove('top-selector', 'visible');
-        });
+        // 检查是否是移动端
+        const isMobile = window.innerWidth <= 768;
         
-        // 移除之前可能存在的占位符
-        const existingPlaceholder = document.querySelector('.selector-placeholder');
-        if (existingPlaceholder) {
-            existingPlaceholder.remove();
-        }
-        
-        // 创建占位符以保持页面布局稳定
-        const placeholder = document.createElement('div');
-        placeholder.className = 'selector-placeholder';
-        placeholder.style.height = selector.offsetHeight + 'px';
-        placeholder.style.width = selector.offsetWidth + 'px';
-        selector.parentNode.insertBefore(placeholder, selector);
-        
-        // 确保选择器可见（移除hidden类）
-        selector.classList.remove('hidden');
-        
-        // 添加顶部选择框类
-        selector.classList.add('top-selector');
-        
-        // 在选择游戏或章节后显示移动端切换按钮
-        showMobileTopBarToggle();
-        
-        // 为章节选择器添加返回按钮
-        if (selectorId === 'chapter-selector') {
-            // 先移除可能存在的返回按钮
-            const existingReturnBtn = document.getElementById('return-to-game-selector');
-            if (existingReturnBtn) {
-                existingReturnBtn.remove();
+        if (!isMobile) {
+            // 桌面端：保持原有功能
+            // 确保移除之前可能添加的顶部选择框类
+            document.querySelectorAll('.top-selector').forEach(el => {
+                el.classList.remove('top-selector', 'visible');
+            });
+            
+            // 移除之前可能存在的占位符
+            const existingPlaceholder = document.querySelector('.selector-placeholder');
+            if (existingPlaceholder) {
+                existingPlaceholder.remove();
             }
             
-            // 创建返回按钮
-            const returnBtn = document.createElement('button');
-            returnBtn.id = 'return-to-game-selector';
-            returnBtn.textContent = '返回游戏选择';
-            returnBtn.className = 'return-btn';
+            // 创建占位符以保持页面布局稳定
+            const placeholder = document.createElement('div');
+            placeholder.className = 'selector-placeholder';
+            placeholder.style.height = selector.offsetHeight + 'px';
+            placeholder.style.width = selector.offsetWidth + 'px';
+            selector.parentNode.insertBefore(placeholder, selector);
             
-            // 将按钮添加到选择器容器的顶部
-            const selectorContainer = selector.querySelector('.selector-container');
-            if (selectorContainer) {
-                selectorContainer.insertBefore(returnBtn, selectorContainer.firstChild);
-            }
+            // 确保选择器可见（移除hidden类）
+            selector.classList.remove('hidden');
             
-            // 添加返回按钮的事件监听器
-            returnBtn.addEventListener('click', function() {
-                // 获取视频容器、游戏选择器和章节选择器元素
-                const videoContainer = document.getElementById('video-container');
-                const gameSelector = document.getElementById('game-selector');
-                const chapterSelector = document.getElementById('chapter-selector');
-                
-                // 为当前显示的元素添加渐隐效果
-                if (videoContainer && !videoContainer.classList.contains('hidden')) {
-                    videoContainer.classList.add('fade-out');
+            // 添加顶部选择框类
+            selector.classList.add('top-selector');
+            
+            // 在选择游戏或章节后显示移动端切换按钮
+            showMobileTopBarToggle();
+            
+            // 为章节选择器添加返回按钮
+            if (selectorId === 'chapter-selector') {
+                // 先移除可能存在的返回按钮
+                const existingReturnBtn = document.getElementById('return-to-game-selector');
+                if (existingReturnBtn) {
+                    existingReturnBtn.remove();
                 }
                 
-                // 延迟执行后续操作，让渐隐动画完成
-                setTimeout(() => {
-                    // 隐藏当前的章节选择器（顶部和原始状态）和视频容器
-                    selector.classList.remove('top-selector', 'visible');
-                    if (videoContainer) {
-                        videoContainer.classList.add('hidden');
-                        videoContainer.classList.remove('fade-out');
+                // 创建返回按钮
+                const returnBtn = document.createElement('button');
+                returnBtn.id = 'return-to-game-selector';
+                returnBtn.textContent = '返回游戏选择';
+                returnBtn.className = 'return-btn';
+                
+                // 将按钮添加到选择器容器的顶部
+                const selectorContainer = selector.querySelector('.selector-container');
+                if (selectorContainer) {
+                    selectorContainer.insertBefore(returnBtn, selectorContainer.firstChild);
+                }
+                
+                // 添加返回按钮的事件监听器
+                returnBtn.addEventListener('click', function() {
+                    // 获取视频容器、游戏选择器和章节选择器元素
+                    const videoContainer = document.getElementById('video-container');
+                    const gameSelector = document.getElementById('game-selector');
+                    const chapterSelector = document.getElementById('chapter-selector');
+                    
+                    // 为当前显示的元素添加渐隐效果
+                    if (videoContainer && !videoContainer.classList.contains('hidden')) {
+                        videoContainer.classList.add('fade-out');
                     }
-                    if (chapterSelector) {
-                        chapterSelector.classList.add('hidden');
-                        // 移除返回按钮
-                        const existingReturnBtn = document.getElementById('return-to-game-selector');
-                        if (existingReturnBtn) {
-                            existingReturnBtn.remove();
+                    
+                    // 延迟执行后续操作，让渐隐动画完成
+                    setTimeout(() => {
+                        // 隐藏当前的章节选择器（顶部和原始状态）和视频容器
+                        selector.classList.remove('top-selector', 'visible');
+                        if (videoContainer) {
+                            videoContainer.classList.add('hidden');
+                            videoContainer.classList.remove('fade-out');
                         }
-                    }
-                    
-                    // 移除占位符
-                    const placeholder = document.querySelector('.selector-placeholder');
-                    if (placeholder) {
-                        placeholder.remove();
-                    }
-                    
-                    // 显示游戏选择器
-                    if (gameSelector) {
-                        // 先重置游戏选择器的动画状态
-                        gameSelector.classList.remove('visible');
-                        gameSelector.style.opacity = '0';
-                        gameSelector.style.transform = 'translateY(20px)';
-                        // 强制重排
-                        gameSelector.offsetHeight;
+                        if (chapterSelector) {
+                            chapterSelector.classList.add('hidden');
+                            // 移除返回按钮
+                            const existingReturnBtn = document.getElementById('return-to-game-selector');
+                            if (existingReturnBtn) {
+                                existingReturnBtn.remove();
+                            }
+                        }
                         
-                        gameSelector.classList.remove('hidden');
-                        // 立即检查并添加visible类，确保动画触发
-                        checkFadeElements();
-                    }
-                    
-                    // 平滑滚动到顶部
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                }, 300);
+                        // 移除占位符
+                        const placeholder = document.querySelector('.selector-placeholder');
+                        if (placeholder) {
+                            placeholder.remove();
+                        }
+                        
+                        // 显示游戏选择器
+                        if (gameSelector) {
+                            // 先重置游戏选择器的动画状态
+                            gameSelector.classList.remove('visible');
+                            gameSelector.style.opacity = '0';
+                            gameSelector.style.transform = 'translateY(20px)';
+                            // 强制重排
+                            gameSelector.offsetHeight;
+                            
+                            gameSelector.classList.remove('hidden');
+                            // 立即检查并添加visible类，确保动画触发
+                            checkFadeElements();
+                        }
+                        
+                        // 平滑滚动到顶部
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }, 300);
+                });
+            }
+            
+            // 强制重排以确保过渡正确触发
+            selector.offsetHeight;
+            
+            // 显示顶部选择框（触发渐显动画）
+            setTimeout(() => {
+                selector.classList.add('visible');
+            }, 10);
+            
+            // 平滑滚动到页面顶部
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
             });
+        } else {
+            // 移动端：隐藏选择器，在视频显示后添加返回按钮
+            // 移除之前可能存在的占位符
+            const existingPlaceholder = document.querySelector('.selector-placeholder');
+            if (existingPlaceholder) {
+                existingPlaceholder.remove();
+            }
+            
+            // 确保选择器隐藏
+            selector.classList.add('hidden');
+            
+            // 移除可能存在的顶部选择框类
+            selector.classList.remove('top-selector', 'visible');
+            
+            // 检查视频容器是否可见
+            if (videoContainer && !videoContainer.classList.contains('hidden')) {
+                // 为视频容器添加返回游戏选择按钮
+                const existingReturnBtn = document.getElementById('mobile-return-to-game-selector');
+                if (!existingReturnBtn) {
+                    // 创建返回按钮
+                    const returnBtn = document.createElement('button');
+                    returnBtn.id = 'mobile-return-to-game-selector';
+                    returnBtn.textContent = '返回游戏选择';
+                    returnBtn.className = 'return-btn mobile-return-btn';
+                    
+                    // 将按钮添加到视频容器的顶部
+                    videoContainer.insertBefore(returnBtn, videoContainer.firstChild);
+                    
+                    // 添加返回按钮的事件监听器
+                    returnBtn.addEventListener('click', function() {
+                        // 获取游戏选择器和章节选择器元素
+                        const gameSelector = document.getElementById('game-selector');
+                        const chapterSelector = document.getElementById('chapter-selector');
+                        
+                        // 为当前显示的元素添加渐隐效果
+                        if (videoContainer && !videoContainer.classList.contains('hidden')) {
+                            videoContainer.classList.add('fade-out');
+                        }
+                        
+                        // 延迟执行后续操作，让渐隐动画完成
+                        setTimeout(() => {
+                            // 隐藏视频容器
+                            if (videoContainer) {
+                                videoContainer.classList.add('hidden');
+                                videoContainer.classList.remove('fade-out');
+                            }
+                            
+                            // 隐藏章节选择器
+                            if (chapterSelector) {
+                                chapterSelector.classList.add('hidden');
+                            }
+                            
+                            // 移除返回按钮
+                            const existingReturnBtn = document.getElementById('mobile-return-to-game-selector');
+                            if (existingReturnBtn) {
+                                existingReturnBtn.remove();
+                            }
+                            
+                            // 显示游戏选择器
+                            if (gameSelector) {
+                                // 先重置游戏选择器的动画状态
+                                gameSelector.classList.remove('visible');
+                                gameSelector.style.opacity = '0';
+                                gameSelector.style.transform = 'translateY(20px)';
+                                // 强制重排
+                                gameSelector.offsetHeight;
+                                
+                                gameSelector.classList.remove('hidden');
+                                // 立即检查并添加visible类，确保动画触发
+                                checkFadeElements();
+                            }
+                            
+                            // 平滑滚动到顶部
+                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                        }, 300);
+                    });
+                }
+            }
         }
-        
-        // 强制重排以确保过渡正确触发
-        selector.offsetHeight;
-        
-        // 显示顶部选择框（触发渐显动画）
-        setTimeout(() => {
-            selector.classList.add('visible');
-        }, 10);
-        
-        // 平滑滚动到页面顶部
-        window.scrollTo({
-            top: 0,
-            behavior: 'smooth'
-        });
     }
 }
 
@@ -822,16 +1111,17 @@ function initScrollAnimation() {
         const fadeElements = document.querySelectorAll('.fade-in');
         
         fadeElements.forEach(element => {
-            // 只处理可见的元素（display不为none）
-            if (element.style.display !== 'none' && getComputedStyle(element).display !== 'none') {
-                const elementTop = element.getBoundingClientRect().top;
-                const elementBottom = element.getBoundingClientRect().bottom;
-                const isVisible = (elementTop < window.innerHeight - 50) && (elementBottom > 0);
-                
-                if (isVisible && !element.classList.contains('visible')) {
-                    element.classList.add('visible');
-                    element.style.opacity = '1';
-                    element.style.transform = 'translateY(0)';
+            if (!element.classList.contains('hidden')) {
+                if (element.style.display !== 'none' && getComputedStyle(element).display !== 'none') {
+                    const elementTop = element.getBoundingClientRect().top;
+                    const elementBottom = element.getBoundingClientRect().bottom;
+                    const isVisible = (elementTop < window.innerHeight - 50) && (elementBottom > 0);
+                    
+                    if (isVisible && !element.classList.contains('visible')) {
+                        element.classList.add('visible');
+                        element.style.opacity = '1';
+                        element.style.transform = 'translateY(0)';
+                    }
                 }
             }
         });
@@ -1223,46 +1513,51 @@ document.addEventListener('DOMContentLoaded', initStatusWarningTips);
 
 // 随机显示推荐视频
 function loadRecommendedVideos() {
-    // 从content.html获取视频内容
-    fetch('content.html')
-        .then(response => response.text())
-        .then(html => {
-            // 创建临时DOM元素来解析HTML
-            const tempDiv = document.createElement('div');
-            tempDiv.innerHTML = html;
-            
-            // 获取所有视频项
-            const allVideos = tempDiv.querySelectorAll('.video-item');
-            
-            // 如果没有视频，不执行后续操作
-            if (allVideos.length === 0) return;
-            
-            // 随机选择4-6个视频
-            const videoCount = Math.floor(Math.random() * 3) + 4; // 4-6个视频
-            const shuffledVideos = Array.from(allVideos).sort(() => 0.5 - Math.random());
-            const selectedVideos = shuffledVideos.slice(0, videoCount);
-            
-            // 获取推荐视频容器
-            const container = document.querySelector('.popular-videos .container');
-            if (!container) return;
-            
-            // 移除"暂无推荐视频"文本
-            const noVideosText = container.querySelector('.no-videos');
-            if (noVideosText) {
-                noVideosText.remove();
-            }
-            
-            // 创建视频网格
-            let videosHTML = '<div class="video-grid">';
-            selectedVideos.forEach(video => {
-                videosHTML += video.outerHTML;
+    // 使用全局变量allVideosData而不是重新加载数据
+    const allVideos = allVideosData;
+    
+    if (allVideos.length === 0) return;
+    
+    const videoCount = Math.floor(Math.random() * 3) + 4;
+    const shuffledVideos = allVideos.sort(() => 0.5 - Math.random());
+    const selectedVideos = shuffledVideos.slice(0, videoCount);
+    
+    const container = document.querySelector('.popular-videos .container');
+    if (!container) return;
+    
+    const noVideosText = container.querySelector('.no-videos');
+    if (noVideosText) {
+        noVideosText.remove();
+    }
+    
+    let videosHTML = '<div class="video-grid">';
+    selectedVideos.forEach(video => {
+                const statusClass = video.status === '异常' ? 'status-warning' : '';
+                const spoilerAttr = video.spoiler ? 'data-spoiler="true"' : '';
+                
+                videosHTML += `
+                    <div class="video-item" data-game="${video.game}" data-chapter="${video.chapter}" video_id="${video.video_id}" ${spoilerAttr}>
+                        <div class="video-thumbnail">
+                            <img src="${video.thumbnail}" alt="${video.title}">
+                            <div class="video-duration">${video.duration}</div>
+                            <div class="play-btn">▶</div>
+                        </div>
+                        <div class="video-info">
+                            <div class="video-title">${video.title}</div>
+                            <div class="video-meta">
+                                <span class="video-date">
+                                    ${video.status === '异常' ? `<span class="${statusClass}" title="审核未通过">${video.status}</span>` : video.status} ${video.date}
+                                </span>
+                                <span class="video-game-tag">${video.tags[0]}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
             });
             videosHTML += '</div>';
             
-            // 插入视频到容器
             container.innerHTML += videosHTML;
             
-            // 为推荐视频添加动画效果
             setTimeout(() => {
                 const videoItems = container.querySelectorAll('.video-item');
                 videoItems.forEach((item, index) => {
@@ -1277,46 +1572,36 @@ function loadRecommendedVideos() {
                 });
             }, 100);
             
-            // 为推荐视频添加点击事件
             const videoItems = container.querySelectorAll('.video-item');
             videoItems.forEach(item => {
-                // 视频项点击事件
                 item.addEventListener('click', function() {
                     const videoId = this.getAttribute('video_id');
                     const game = this.dataset.game;
                     const chapter = this.dataset.chapter;
                     
-                    // 检查视频ID是否为空或无效
                     if (!videoId || videoId === '') {
                         customConfirm('此视频状态异常，无法播放', '错误', '确定', '');
                         return;
                     }
                     
-                    // 检查是否有警告状态
                     if (this.querySelector('.status-warning')) {
                         customConfirm('该视频可能包含剧透内容，确定要继续观看吗？', '警告', '继续观看', '取消')
                             .then(result => {
                                 if (result) {
-                                    // 跳转到播放页面
                                     window.location.href = `player.html?video_id=${videoId}&game=${game}&chapter=${chapter}`;
                                 }
                             });
                     } else {
-                        // 跳转到播放页面
                         window.location.href = `player.html?video_id=${videoId}&game=${game}&chapter=${chapter}`;
                     }
                 });
                 
-                // 播放按钮点击事件
                 const playBtn = item.querySelector('.play-btn');
                 if (playBtn) {
                     playBtn.addEventListener('click', function(e) {
                         e.stopPropagation();
-                        // 触发视频项的点击事件
                         item.click();
                     });
                 }
             });
-        })
-        .catch(error => console.error('加载推荐视频失败:', error));
-}
+        }

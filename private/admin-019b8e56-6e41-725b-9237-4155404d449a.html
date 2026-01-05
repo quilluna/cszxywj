@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>视频数据管理</title>
+    <!-- 引入网站全局样式 -->
+    <link rel="stylesheet" href="../css/style.css">
+    <!-- 引入Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <!-- 引入Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <!-- 引入Font Awesome -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@6.4.0/css/all.min.css">
+    <style>
+        /* 管理页面特定样式 */
+        
+        main {
+            margin-top: 80px; /* 为固定导航栏留出空间 */
+            padding: var(--spacing-xl) 0;
+            min-height: calc(100vh - 80px);
+            box-sizing: border-box;
+        }
+        
+        .admin-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 var(--spacing-md);
+        }
+        
+        .admin-header {
+            background-color: var(--card-bg);
+            padding: var(--spacing-lg);
+            border-radius: var(--border-radius);
+            margin-bottom: var(--spacing-xl);
+            box-shadow: var(--shadow-lg);
+            text-align: center;
+        }
+        
+        .admin-header h1 {
+            font-family: var(--pixel-font);
+            color: var(--primary-purple);
+            margin: 0;
+            font-size: 1.8rem;
+        }
+        
+        .admin-card {
+            background-color: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-lg);
+            margin-bottom: var(--spacing-lg);
+            overflow: hidden;
+        }
+        
+        .admin-card-header {
+            background-color: var(--primary-purple);
+            color: white;
+            padding: var(--spacing-md);
+            border-bottom: 1px solid var(--border-light);
+        }
+        
+        .admin-card-body {
+            padding: var(--spacing-lg);
+        }
+        
+        .btn-action {
+            margin: 0 5px;
+        }
+        
+        .table-responsive {
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: var(--border-radius-sm);
+            font-size: 12px;
+            font-weight: var(--subtitle-font-weight);
+        }
+        
+        .status-published {
+            background-color: var(--accent-green);
+            color: white;
+        }
+        
+        .status-warning {
+            background-color: var(--accent-orange);
+            color: black;
+        }
+        
+        .status-error {
+            background-color: var(--primary-red);
+            color: white;
+        }
+        
+        .status-info {
+            background-color: var(--primary-blue);
+            color: white;
+        }
+        
+        /* 表格样式修复 */
+        .table {
+            color: var(--text-dark) !important;
+        }
+        
+        /* 确保表格所有单元格文字颜色正确 */
+        .table th,
+        .table td,
+        .table tbody tr,
+        .table tbody td {
+            color: var(--text-dark) !important;
+            background-color: transparent !important;
+        }
+        
+        .table-striped tbody tr:nth-of-type(odd) {
+            background-color: rgba(0, 0, 0, 0.05) !important;
+        }
+        
+        [data-theme="dark"] .table-striped tbody tr:nth-of-type(odd) {
+            background-color: rgba(255, 255, 255, 0.05) !important;
+        }
+        
+        .table-bordered th,
+        .table-bordered td {
+            border-color: var(--border-light) !important;
+        }
+        
+        .game-tag {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: var(--border-radius-sm);
+            font-size: 12px;
+            margin-right: 5px;
+            font-weight: var(--subtitle-font-weight);
+        }
+        
+        .game-undertale {
+            background-color: var(--primary-red);
+            color: white;
+        }
+        
+        .game-deltarune {
+            background-color: var(--primary-cyan);
+            color: white;
+        }
+        
+        /* SAP模式样式 */
+        .sap-container {
+            position: relative;
+            min-height: 500px;
+        }
+        
+        .sap-section {
+            display: none;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        
+        .sap-section.active {
+            display: block;
+        }
+        
+        /* 导航菜单样式 */
+        .nav-menu {
+            display: flex;
+            gap: var(--spacing-sm);
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        /* 确保导航链接样式优先于Bootstrap */
+        .navbar .nav-link {
+            color: var(--text-light);
+            text-decoration: none;
+            font-weight: 500;
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: var(--border-radius-sm);
+            transition: all var(--transition-normal);
+            position: relative;
+            font-size: 0.95rem;
+        }
+
+        .navbar .nav-link:hover,
+        .navbar .nav-link.active {
+            color: var(--primary-purple);
+            background-color: rgba(124, 58, 237, 0.05);
+            box-shadow: 0 0 15px rgba(124, 58, 237, 0.4);
+            padding-left: var(--spacing-lg);
+        }
+
+        .navbar .nav-link.active::before {
+            content: url('imgs/heart.png');
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 16px;
+            height: 16px;
+        }
+
+        .navbar-right {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .navbar-controls {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+        }
+        
+        /* 确保Bootstrap按钮样式正常工作 */
+        .navbar-controls .btn {
+            margin-right: 5px;
+        }
+        
+        .navbar-controls .btn-primary {
+            background-color: var(--primary-purple);
+            border-color: var(--primary-purple);
+        }
+        
+        .navbar-controls .btn-primary:hover {
+            background-color: var(--secondary-purple);
+            border-color: var(--secondary-purple);
+        }
+        
+        .navbar-controls .btn-info {
+            background-color: var(--primary-blue);
+            border-color: var(--primary-blue);
+        }
+        
+        .navbar-controls .btn-info:hover {
+            background-color: var(--secondary-blue);
+            border-color: var(--secondary-blue);
+        }
+        
+        /* 模态框深色模式适配 */
+        .modal-content {
+            background-color: var(--card-bg) !important;
+            color: var(--text-dark) !important;
+            border: 1px solid var(--border-light) !important;
+        }
+        
+        .modal-header {
+            background-color: var(--primary-purple) !important;
+            color: white !important;
+            border-bottom: 1px solid var(--border-light) !important;
+        }
+        
+        .modal-title {
+            color: white !important;
+        }
+        
+        .modal-body {
+            background-color: var(--card-bg) !important;
+            color: var(--text-dark) !important;
+        }
+        
+        .modal-footer {
+            background-color: var(--card-bg) !important;
+            border-top: 1px solid var(--border-light) !important;
+        }
+        
+        .modal-body label {
+            color: var(--text-medium) !important;
+        }
+        
+        .modal-body input,
+        .modal-body textarea,
+        .modal-body select {
+            background-color: var(--card-bg) !important;
+            color: var(--text-dark) !important;
+            border: 1px solid var(--border-light) !important;
+        }
+        
+        .modal-body input:focus,
+        .modal-body textarea:focus,
+        .modal-body select:focus {
+            border-color: var(--primary-purple) !important;
+            box-shadow: 0 0 0 0.2rem rgba(124, 58, 237, 0.25) !important;
+        }
+        
+        .close {
+            color: white !important;
+            opacity: 1 !important;
+        }
+        
+        .close:hover {
+            color: var(--text-light) !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <header class="navbar">
+        <div class="container">
+            <div class="logo">
+                <h1>CSZXYWJ 管理模式</h1>
+            </div>
+            <nav class="nav-menu">
+                <a href="#" class="nav-link active" onclick="switchSection('videos', event); return false;">视频管理</a>
+                <a href="#" class="nav-link" onclick="switchSection('notifications', event); return false;">通知管理</a>
+                <a href="#" class="nav-link" onclick="switchSection('update-preview', event); return false;">预告管理</a>
+            </nav>
+            <!-- 右侧控制区域 -->
+            <div class="navbar-right">
+                <!-- 控制面板 -->
+                <div class="navbar-controls">
+                    <button class="btn btn-primary btn-sm" onclick="fetchData()">
+                        <i class="fa fa-sync-alt"></i> 刷新
+                    </button>
+                    <button class="btn btn-info btn-sm" onclick="copyJsonData()">
+                        <i class="fa fa-copy"></i> 保存更改
+                    </button>
+                    <span id="data-status" style="color: var(--text-light); font-size: 14px; margin-left: var(--spacing-sm);">数据加载中...</span>
+                </div>
+                <!-- 汉堡菜单按钮 -->
+                <div class="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+                <!-- 设置按钮和菜单 -->
+                <div class="settings-container hidden">
+                    <button id="settingsBtn" class="settings-btn">⚙️</button>
+                    <div id="settingsMenu" class="settings-menu">
+                        <!-- 主题设置分类 -->
+                        <div class="settings-category">
+                            <div class="settings-category-title">主题</div>
+                            <div class="settings-item">
+                                <span class="settings-label">深色模式</span>
+                                <button id="themeToggle" class="theme-btn">
+                                    <span class="sun-icon">☀️</span>
+                                    <span class="moon-icon">🌙</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <main>
+        <div class="admin-container">
+
+        <!-- SAP内容容器 -->
+        <div class="sap-container">
+            <!-- 视频列表 -->
+            <div class="admin-card sap-section active" id="videos">
+                <div class="admin-card-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h2>视频列表</h2>
+                        <button class="btn btn-success btn-sm" onclick="showAddVideoModal()">
+                            <i class="fa fa-plus"></i> 添加视频
+                        </button>
+                    </div>
+                </div>
+                <div class="admin-card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-bordered" style="background-color: var(--card-bg);">
+                            <thead style="background-color: var(--primary-purple); color: white;">
+                                <tr>
+                                    <th>游戏</th>
+                                    <th>章节</th>
+                                    <th>视频ID</th>
+                                    <th>标题</th>
+                                    <th>时长</th>
+                                    <th>日期</th>
+                                    <th>状态</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="videos-table-body">
+                                <tr>
+                                    <td colspan="8" class="text-center" style="color: var(--text-medium);">数据加载中...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 通知列表 -->
+            <div class="admin-card sap-section" id="notifications">
+                <div class="admin-card-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h2>通知列表</h2>
+                        <button class="btn btn-danger btn-sm" onclick="showAddNotificationModal()">
+                            <i class="fa fa-bell"></i> 添加通知
+                        </button>
+                    </div>
+                </div>
+                <div class="admin-card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-bordered" style="background-color: var(--card-bg);">
+                            <thead style="background-color: var(--primary-purple); color: white;">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>标题</th>
+                                    <th>内容</th>
+                                    <th>类型</th>
+                                    <th>日期</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="notifications-table-body">
+                                <tr>
+                                    <td colspan="6" class="text-center" style="color: var(--text-medium);">数据加载中...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 更新预告 -->
+            <div class="admin-card sap-section" id="update-preview">
+                <div class="admin-card-header">
+                    <h2>更新预告</h2>
+                </div>
+                <div class="admin-card-body">
+                    <div id="update-preview-content">
+                        <p style="color: var(--text-medium);">加载中...</p>
+                    </div>
+                    <button class="btn btn-primary" onclick="showUpdatePreviewModal()">
+                        <i class="fa fa-edit"></i> 编辑更新预告
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 更新预告编辑模态框 -->
+    <div class="modal fade" id="updatePreviewModal" tabindex="-1" role="dialog" aria-labelledby="updatePreviewModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="updatePreviewModalLabel">编辑更新预告</h5>
+                </div>
+                <div class="modal-body">
+                    <form id="updatePreviewForm">
+                        <div class="form-group">
+                            <label for="updateTitle">标题</label>
+                            <input type="text" class="form-control" id="updateTitle" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="updateTime">时间</label>
+                            <input type="text" class="form-control" id="updateTime" placeholder="YYYY-MM-DD HH:MM">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-primary" onclick="saveUpdatePreview()">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 添加/编辑通知模态框 -->
+    <div class="modal fade" id="notificationModal" tabindex="-1" role="dialog" aria-labelledby="notificationModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="notificationModalLabel">添加通知</h5>
+                </div>
+                <div class="modal-body">
+                    <form id="notificationForm">
+                        <input type="hidden" id="notificationId">
+                        <div class="form-group">
+                            <label for="notificationTitle">标题</label>
+                            <input type="text" class="form-control" id="notificationTitle" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="notificationContent">内容</label>
+                            <textarea class="form-control" id="notificationContent" rows="3" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="notificationType">类型</label>
+                            <select class="form-control" id="notificationType" required>
+                                <option value="warning">警告</option>
+                                <option value="info">信息</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="notificationDate">日期</label>
+                            <input type="date" class="form-control" id="notificationDate" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-primary" onclick="saveNotification()">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 添加/编辑视频模态框 -->
+    <div class="modal fade" id="videoModal" tabindex="-1" role="dialog" aria-labelledby="videoModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="videoModalLabel">添加视频</h5>
+                </div>
+                <div class="modal-body">
+                    <form id="videoForm">
+                        <input type="hidden" id="videoIndex">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="videoGame">游戏</label>
+                                    <select class="form-control" id="videoGame" required>
+                                        <option value="undertale">Undertale</option>
+                                        <option value="deltarune">Deltarune</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="videoChapter">章节</label>
+                                    <input type="text" class="form-control" id="videoChapter" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="videoId">视频ID</label>
+                                    <input type="text" class="form-control" id="videoId" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="videoThumbnail">缩略图URL</label>
+                                    <input type="text" class="form-control" id="videoThumbnail" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="videoTitle">标题</label>
+                                    <input type="text" class="form-control" id="videoTitle" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="videoDuration">时长</label>
+                                    <input type="text" class="form-control" id="videoDuration" placeholder="00:00" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="videoDate">日期</label>
+                                    <input type="text" class="form-control" id="videoDate" placeholder="2021年02月22日 11:25" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="videoStatus">状态</label>
+                                    <select class="form-control" id="videoStatus" required>
+                                        <option value="已发布">已发布</option>
+                                        <option value="异常">异常</option>
+                                        <option value="审核中">审核中</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="videoErrorReason">错误原因（仅当状态为异常时）</label>
+                            <input type="text" class="form-control" id="videoErrorReason">
+                        </div>
+                        <div class="form-group">
+                            <label for="videoSpoiler">剧透警告</label>
+                            <input type="checkbox" id="videoSpoiler">
+                            <span>启用剧透警告</span>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-primary" onclick="saveVideo()">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 删除确认模态框 -->
+    <div class="modal fade" id="deleteConfirmModal" tabindex="-1" role="dialog" aria-labelledby="deleteConfirmModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteConfirmModalLabel">确认删除</h5>
+                </div>
+                <div class="modal-body">
+                    确定要删除这个视频吗？
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-danger" onclick="confirmDeleteVideo()">删除</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 复制成功提示模态框 -->
+    <div class="modal fade" id="copySuccessModal" tabindex="-1" role="dialog" aria-labelledby="copySuccessModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="copySuccessModalLabel">操作成功</h5>
+                </div>
+                <div class="modal-body">
+                    JSON数据已成功复制到剪贴板！
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">确定</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 删除通知确认模态框 -->
+    <div class="modal fade" id="deleteNotificationModal" tabindex="-1" role="dialog" aria-labelledby="deleteNotificationModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteNotificationModalLabel">确认删除</h5>
+                </div>
+                <div class="modal-body">
+                    确定要删除这条通知吗？
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-danger" onclick="confirmDeleteNotification()">删除</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 引入jQuery和Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- 引入全局脚本 -->
+    <script src="js/script.js"></script>
+
+    <script>
+        // 全局数据变量
+        let allData = {
+            update_preview: {},
+            notifications: [],
+            videos: []
+        };
+        
+        // 存储要删除的视频索引
+        let videoIndexToDelete = null;
+        
+        // 存储要删除的通知索引
+        let notificationIndexToDelete = null;
+
+        // 页面加载完成后执行
+        $(document).ready(function() {
+            fetchData();
+            // 初始化深色模式功能
+            initDarkMode();
+        });
+
+        // 从API获取数据
+        async function fetchData() {
+            try {
+                const response = await fetch('/api/fetch_data');
+                if (!response.ok) {
+                    throw new Error('网络请求失败');
+                }
+                allData = await response.json();
+                renderAllData();
+                document.getElementById('data-status').innerHTML = '<span class="text-success">数据加载成功</span>';
+            } catch (error) {
+                console.error('获取数据失败:', error);
+                document.getElementById('data-status').innerHTML = '<span class="text-danger">数据加载失败：' + error.message + '</span>';
+                // 尝试从本地文件获取数据
+                try {
+                    const localResponse = await fetch('data.json');
+                    if (localResponse.ok) {
+                        allData = await localResponse.json();
+                        renderAllData();
+                        document.getElementById('data-status').innerHTML = '<span class="text-warning">已加载本地数据</span>';
+                    }
+                } catch (localError) {
+                    console.error('获取本地数据失败:', localError);
+                }
+            }
+        }
+
+        // 渲染所有数据
+        function renderAllData() {
+            renderUpdatePreview();
+            renderNotifications();
+            renderVideos();
+        }
+
+        // 渲染更新预告
+        function renderUpdatePreview() {
+            const preview = allData.update_preview || {};
+            const content = document.getElementById('update-preview-content');
+            content.innerHTML = `
+                <h3 style="color: var(--text-dark);">${preview.title || '暂无更新预告'}</h3>
+                <p style="color: var(--text-medium);">时间：${preview.time || '待定'}</p>
+            `;
+        }
+
+        // 渲染通知列表
+        function renderNotifications() {
+            const tbody = document.getElementById('notifications-table-body');
+            const notifications = allData.notifications || [];
+
+            if (notifications.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center">暂无通知</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = notifications.map((notification, index) => `
+                <tr>
+                    <td>${notification.id || index + 1}</td>
+                    <td>${notification.title}</td>
+                    <td>${notification.content}</td>
+                    <td><span class="status-badge status-${notification.type}">${notification.type}</span></td>
+                    <td>${notification.date}</td>
+                    <td>
+                        <button class="btn btn-primary btn-sm btn-action" onclick="editNotification(${index})">
+                            <i class="fa fa-edit"></i> 编辑
+                        </button>
+                        <button class="btn btn-danger btn-sm btn-action" onclick="deleteNotification(${index})">
+                            <i class="fa fa-trash"></i> 删除
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // 渲染视频列表
+        function renderVideos() {
+            const tbody = document.getElementById('videos-table-body');
+            const videos = allData.videos || [];
+
+            if (videos.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" class="text-center">暂无视频</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = videos.map((video, index) => `
+                <tr>
+                    <td><span class="game-tag game-${video.game}">${video.game}</span></td>
+                    <td>${video.chapter}</td>
+                    <td>${video.video_id}</td>
+                    <td>${video.title}</td>
+                    <td>${video.duration}</td>
+                    <td>${video.date}</td>
+                    <td><span class="status-badge status-${video.status === '已发布' ? 'published' : video.status === '异常' ? 'error' : 'warning'}">${video.status}</span></td>
+                    <td>
+                        <button class="btn btn-primary btn-sm btn-action" onclick="editVideo(${index})">
+                            <i class="fa fa-edit"></i> 编辑
+                        </button>
+                        <button class="btn btn-danger btn-sm btn-action" onclick="deleteVideo(${index})">
+                            <i class="fa fa-trash"></i> 删除
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // 显示更新预告编辑模态框
+        function showUpdatePreviewModal() {
+            const preview = allData.update_preview || {};
+            document.getElementById('updateTitle').value = preview.title || '';
+            document.getElementById('updateTime').value = preview.time || '';
+            $('#updatePreviewModal').modal('show');
+        }
+
+        // 保存更新预告
+        function saveUpdatePreview() {
+            allData.update_preview = {
+                title: document.getElementById('updateTitle').value,
+                time: document.getElementById('updateTime').value
+            };
+            renderUpdatePreview();
+            $('#updatePreviewModal').modal('hide');
+        }
+
+        // 显示添加通知模态框
+        function showAddNotificationModal() {
+            document.getElementById('notificationModalLabel').textContent = '添加通知';
+            document.getElementById('notificationForm').reset();
+            document.getElementById('notificationId').value = '';
+            $('#notificationModal').modal('show');
+        }
+
+        // 编辑通知
+        function editNotification(index) {
+            const notification = allData.notifications[index];
+            document.getElementById('notificationModalLabel').textContent = '编辑通知';
+            document.getElementById('notificationId').value = index;
+            document.getElementById('notificationTitle').value = notification.title;
+            document.getElementById('notificationContent').value = notification.content;
+            document.getElementById('notificationType').value = notification.type;
+            document.getElementById('notificationDate').value = notification.date;
+            $('#notificationModal').modal('show');
+        }
+
+        // 保存通知
+        function saveNotification() {
+            const index = document.getElementById('notificationId').value;
+            const notification = {
+                id: parseInt(index) + 1 || allData.notifications.length + 1,
+                title: document.getElementById('notificationTitle').value,
+                content: document.getElementById('notificationContent').value,
+                type: document.getElementById('notificationType').value,
+                date: document.getElementById('notificationDate').value
+            };
+
+            if (index) {
+                allData.notifications[parseInt(index)] = notification;
+            } else {
+                allData.notifications.push(notification);
+            }
+
+            renderNotifications();
+            $('#notificationModal').modal('hide');
+        }
+
+        // 删除通知
+        function deleteNotification(index) {
+            // 存储要删除的通知索引
+            notificationIndexToDelete = index;
+            // 显示删除确认模态框
+            $('#deleteNotificationModal').modal('show');
+        }
+        
+        // 确认删除通知
+        function confirmDeleteNotification() {
+            if (notificationIndexToDelete !== null) {
+                allData.notifications.splice(notificationIndexToDelete, 1);
+                renderNotifications();
+                // 关闭模态框
+                $('#deleteNotificationModal').modal('hide');
+                // 重置索引
+                notificationIndexToDelete = null;
+            }
+        }
+
+        // 显示添加视频模态框
+        function showAddVideoModal() {
+            document.getElementById('videoModalLabel').textContent = '添加视频';
+            document.getElementById('videoForm').reset();
+            document.getElementById('videoIndex').value = '';
+            $('#videoModal').modal('show');
+        }
+
+        // 编辑视频
+        function editVideo(index) {
+            const video = allData.videos[index];
+            document.getElementById('videoModalLabel').textContent = '编辑视频';
+            document.getElementById('videoIndex').value = index;
+            document.getElementById('videoGame').value = video.game;
+            document.getElementById('videoChapter').value = video.chapter;
+            document.getElementById('videoId').value = video.video_id;
+            document.getElementById('videoThumbnail').value = video.thumbnail;
+            document.getElementById('videoTitle').value = video.title;
+            document.getElementById('videoDuration').value = video.duration;
+            document.getElementById('videoDate').value = video.date;
+            document.getElementById('videoStatus').value = video.status;
+            document.getElementById('videoErrorReason').value = video.error_reason || '';
+            document.getElementById('videoSpoiler').checked = video.spoiler || false;
+            $('#videoModal').modal('show');
+        }
+
+        // 保存视频
+        function saveVideo() {
+            const index = document.getElementById('videoIndex').value;
+            const video = {
+                game: document.getElementById('videoGame').value,
+                chapter: document.getElementById('videoChapter').value,
+                video_id: document.getElementById('videoId').value,
+                thumbnail: document.getElementById('videoThumbnail').value,
+                title: document.getElementById('videoTitle').value,
+                duration: document.getElementById('videoDuration').value,
+                date: document.getElementById('videoDate').value,
+                status: document.getElementById('videoStatus').value,
+                tags: [document.getElementById('videoGame').value === 'undertale' ? 'Undertale' : 'Deltarune'],
+                error_reason: document.getElementById('videoStatus').value === '异常' ? document.getElementById('videoErrorReason').value : undefined,
+                spoiler: document.getElementById('videoSpoiler').checked
+            };
+
+            if (index) {
+                allData.videos[parseInt(index)] = video;
+            } else {
+                allData.videos.push(video);
+            }
+
+            renderVideos();
+            $('#videoModal').modal('hide');
+        }
+
+        // 删除视频
+        function deleteVideo(index) {
+            // 存储要删除的视频索引
+            videoIndexToDelete = index;
+            // 显示删除确认模态框
+            $('#deleteConfirmModal').modal('show');
+        }
+        
+        // 确认删除视频
+        function confirmDeleteVideo() {
+            if (videoIndexToDelete !== null) {
+                allData.videos.splice(videoIndexToDelete, 1);
+                renderVideos();
+                // 关闭模态框
+                $('#deleteConfirmModal').modal('hide');
+                // 重置索引
+                videoIndexToDelete = null;
+            }
+        }
+
+        // 复制JSON数据到剪贴板
+        function copyJsonData() {
+            try {
+                const jsonString = JSON.stringify(allData, null, 2);
+                navigator.clipboard.writeText(jsonString).then(() => {
+                    // 显示复制成功模态框
+                    $('#copySuccessModal').modal('show');
+                }).catch(err => {
+                    console.error('复制失败:', err);
+                    alert('复制失败，请手动复制数据。');
+                    // 提供一个备用的复制方法
+                    const textarea = document.createElement('textarea');
+                    textarea.value = jsonString;
+                    document.body.appendChild(textarea);
+                    textarea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textarea);
+                });
+            } catch (error) {
+                console.error('复制数据失败:', error);
+                alert('复制数据失败：' + error.message);
+            }
+        }
+        
+        // SAP模式板块切换函数
+        function switchSection(sectionId, event) {
+            // 移除所有导航链接的active类
+            const navLinks = document.querySelectorAll('.nav-link');
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+            });
+            
+            // 为当前点击的导航链接添加active类
+            event.target.classList.add('active');
+            
+            // 隐藏所有的sap-section
+            const sections = document.querySelectorAll('.sap-section');
+            sections.forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // 显示当前选择的sap-section
+            const targetSection = document.getElementById(sectionId);
+            if (targetSection) {
+                targetSection.classList.add('active');
+            }
+        }
+    </script>
+</body>
+</html>

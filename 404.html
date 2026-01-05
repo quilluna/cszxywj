@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - 页面不存在</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <script src="js/includes.js"></script>
+    <style>
+        .error-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 80vh;
+            text-align: center;
+            padding: var(--spacing-xl);
+        }
+        
+        .error-title {
+            font-family: var(--pixel-font);
+            font-size: clamp(4rem, 12vw, 10rem);
+            font-weight: var(--title-font-weight);
+            color: var(--primary-blue);
+            margin-bottom: var(--spacing-sm);
+            text-shadow: 4px 4px 0px var(--primary-purple);
+            animation: glitch 2s infinite;
+        }
+        
+        .error-subtitle {
+            font-family: var(--main-font);
+            font-size: clamp(1.5rem, 4vw, 2.5rem);
+            font-weight: var(--subtitle-font-weight);
+            color: var(--text-dark);
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .error-message {
+            font-family: var(--main-font);
+            font-size: clamp(1rem, 2vw, 1.25rem);
+            color: var(--text-medium);
+            max-width: 600px;
+            margin-bottom: var(--spacing-xl);
+            line-height: 1.8;
+        }
+        
+        .error-image {
+            width: clamp(200px, 40vw, 400px);
+            height: auto;
+            margin-bottom: var(--spacing-lg);
+            opacity: 0.8;
+            filter: drop-shadow(0 10px 25px rgba(0, 0, 0, 0.3));
+        }
+        
+        .btn-home {
+            display: inline-block;
+            padding: var(--spacing-md) var(--spacing-xl);
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-purple));
+            color: var(--white);
+            font-family: var(--main-font);
+            font-size: 1.125rem;
+            font-weight: var(--subtitle-font-weight);
+            text-decoration: none;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-lg);
+            transition: all var(--transition-normal);
+        }
+        
+        .btn-home:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-xl);
+            filter: brightness(1.05);
+        }
+        
+        @keyframes glitch {
+            0%, 100% {
+                transform: translate(0);
+            }
+            20% {
+                transform: translate(-2px, 2px);
+            }
+            40% {
+                transform: translate(-2px, -2px);
+            }
+            60% {
+                transform: translate(2px, 2px);
+            }
+            80% {
+                transform: translate(2px, -2px);
+            }
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .error-container {
+                padding: var(--spacing-lg);
+            }
+            
+            .error-title {
+                font-size: clamp(3rem, 15vw, 8rem);
+                text-shadow: 3px 3px 0px var(--primary-purple);
+            }
+        }
+    </style>
+</head>
+<body>
+    <script>
+        initPage('404 - 页面不存在', '404');
+    </script>
+
+    <div class="error-container">
+        <img src="imgs/404.png" alt="错误图标" class="error-image">
+        <h1 class="error-title">404</h1>
+        <h2 class="error-subtitle">页面未找到...</h2>
+        <p class="error-message">
+            该页面可能还没被「招揽」。<br>
+            别担心，点击下面的按钮回到「小镇」吧！
+        </p>
+        <a href="index.html" class="btn-home">返回主页</a>
+    </div>
+
+    <script>
+        // 初始化深色模式
+        document.addEventListener('DOMContentLoaded', () => {
+            // 从localStorage获取主题设置
+            const savedTheme = localStorage.getItem('theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const theme = savedTheme || (prefersDark ? 'dark' : 'light');
+            
+            // 应用主题
+            document.documentElement.setAttribute('data-theme', theme);
+        });
+    </script>
+</body>
+</html>
