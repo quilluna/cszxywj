@@ -43,7 +43,7 @@ export async function onRequestGet(context) {
     return new Response(JSON.stringify(apiResponse.data), {
       headers: {
         'content-type': 'application/json',
-        'Access-Control-Allow-Origin': 'https://cszxywj.de5.net', // 只允许指定域名访问
+        'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Methods': 'GET, OPTIONS',
         'Access-Control-Allow-Headers': 'Content-Type'
       }
@@ -59,7 +59,7 @@ export async function onRequestGet(context) {
       status: 500,
       headers: {
         'content-type': 'application/json',
-        'Access-Control-Allow-Origin': 'https://cszxywj.de5.net'
+        'Access-Control-Allow-Origin': '*'
       }
     });
   }
@@ -69,7 +69,7 @@ export async function onRequestGet(context) {
 export async function onRequestOptions(context) {
   return new Response(null, {
     headers: {
-      'Access-Control-Allow-Origin': 'https://cszxywj.de5.net',
+      'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Methods': 'GET, OPTIONS',
       'Access-Control-Allow-Headers': 'Content-Type'
     }

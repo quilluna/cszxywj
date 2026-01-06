@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>视频数据管理</title>
+    <link rel="icon" href="imgs/heart.png" type="image/png">
     <!-- 引入网站全局样式 -->
     <link rel="stylesheet" href="../css/style.css">
     <!-- 引入Google Fonts -->
@@ -314,6 +315,9 @@
                     <button class="btn btn-info btn-sm" onclick="copyJsonData()">
                         <i class="fa fa-copy"></i> 保存更改
                     </button>
+                    <a href="index.html" class="btn btn-secondary btn-sm">
+                        <i class="fa fa-home"></i> 返回主页
+                    </a>
                     <span id="data-status" style="color: var(--text-light); font-size: 14px; margin-left: var(--spacing-sm);">数据加载中...</span>
                 </div>
                 <!-- 汉堡菜单按钮 -->
@@ -447,8 +451,15 @@
                             <input type="text" class="form-control" id="updateTitle" required>
                         </div>
                         <div class="form-group">
+                            <label for="timeSelect">时间类型</label>
+                            <select class="form-control" id="timeSelect" required>
+                                <option value="time">时间</option>
+                                <option value="pending">待定</option>
+                            </select>
+                        </div>
+                        <div class="form-group" id="timeInputGroup">
                             <label for="updateTime">时间</label>
-                            <input type="text" class="form-control" id="updateTime" placeholder="YYYY-MM-DD HH:MM">
+                            <input type="datetime-local" class="form-control" id="updateTime">
                         </div>
                     </form>
                 </div>
@@ -538,11 +549,11 @@
                                 </div>
                                 <div class="form-group">
                                     <label for="videoDuration">时长</label>
-                                    <input type="text" class="form-control" id="videoDuration" placeholder="00:00" required>
+                                    <input type="text" class="form-control" id="videoDuration" required>
                                 </div>
                                 <div class="form-group">
                                     <label for="videoDate">日期</label>
-                                    <input type="text" class="form-control" id="videoDate" placeholder="2021年02月22日 11:25" required>
+                                    <input type="datetime-local" class="form-control" id="videoDate" required>
                                 </div>
                                 <div class="form-group">
                                     <label for="videoStatus">状态</label>
@@ -651,6 +662,22 @@
             fetchData();
             // 初始化深色模式功能
             initDarkMode();
+            
+            // 时间类型选择事件
+            const timeSelect = document.getElementById('timeSelect');
+            const timeInputGroup = document.getElementById('timeInputGroup');
+            const updateTime = document.getElementById('updateTime');
+            
+            if (timeSelect) {
+                timeSelect.addEventListener('change', function() {
+                    if (this.value === 'time') {
+                        timeInputGroup.style.display = 'block';
+                    } else {
+                        timeInputGroup.style.display = 'none';
+                        updateTime.value = '';
+                    }
+                });
+            }
         });
 
         // 从API获取数据
@@ -691,9 +718,10 @@
         function renderUpdatePreview() {
             const preview = allData.update_preview || {};
             const content = document.getElementById('update-preview-content');
+            const displayTime = preview.time ? formatDateTime(preview.time) : '待定';
             content.innerHTML = `
                 <h3 style="color: var(--text-dark);">${preview.title || '暂无更新预告'}</h3>
-                <p style="color: var(--text-medium);">时间：${preview.time || '待定'}</p>
+                <p style="color: var(--text-medium);">时间：${displayTime}</p>
             `;
         }
 
@@ -713,20 +741,80 @@
                     <td>${notification.title}</td>
                     <td>${notification.content}</td>
                     <td><span class="status-badge status-${notification.type}">${notification.type}</span></td>
-                    <td>${notification.date}</td>
+                    <td>${formatDate(notification.date)}</td>
                     <td>
-                        <button class="btn btn-primary btn-sm btn-action" onclick="editNotification(${index})">
-                            <i class="fa fa-edit"></i> 编辑
-                        </button>
-                        <button class="btn btn-danger btn-sm btn-action" onclick="deleteNotification(${index})">
-                            <i class="fa fa-trash"></i> 删除
-                        </button>
+                        <button class="btn btn-primary btn-sm btn-action" onclick="editNotification(${index})"><i class="fa fa-edit"></i> 编辑</button>
+                        <button class="btn btn-danger btn-sm btn-action" onclick="deleteNotification(${index})"><i class="fa fa-trash"></i> 删除</button>
                     </td>
                 </tr>
             `).join('');
+
         }
 
-        // 渲染视频列表
+        // 日期时间格式化函数：将日期对象或字符串格式化为标准格式
+        function formatDateTime(dateStr) {
+            if (!dateStr) return '';
+            
+            // 处理不同格式的日期字符串
+            let dateObj;
+            if (dateStr.includes('T')) {
+                // YYYY-MM-DDThh:mm格式
+                dateObj = new Date(dateStr);
+            } else if (dateStr.includes(' ')) {
+                // YYYY-MM-DD HH:MM格式
+                dateObj = new Date(dateStr.replace(' ', 'T'));
+            } else {
+                // YYYY-MM-DD格式
+                dateObj = new Date(dateStr);
+            }
+            
+            if (isNaN(dateObj.getTime())) return dateStr;
+            
+            const year = dateObj.getFullYear();
+            const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+            const day = String(dateObj.getDate()).padStart(2, '0');
+            const hours = String(dateObj.getHours()).padStart(2, '0');
+            const minutes = String(dateObj.getMinutes()).padStart(2, '0');
+            
+            return `${year}-${month}-${day} ${hours}:${minutes}`;
+        }
+        
+        // 日期格式化函数：将日期对象或字符串格式化为标准日期格式（仅日期，无时间）
+        function formatDate(dateStr) {
+            if (!dateStr) return '';
+            
+            // 处理不同格式的日期字符串
+            let dateObj;
+            if (dateStr.includes('T')) {
+                // YYYY-MM-DDThh:mm格式
+                dateObj = new Date(dateStr);
+            } else if (dateStr.includes(' ')) {
+                // YYYY-MM-DD HH:MM格式
+                dateObj = new Date(dateStr.replace(' ', 'T'));
+            } else {
+                // YYYY-MM-DD格式
+                dateObj = new Date(dateStr);
+            }
+            
+            if (isNaN(dateObj.getTime())) return dateStr;
+            
+            const year = dateObj.getFullYear();
+            const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+            const day = String(dateObj.getDate()).padStart(2, '0');
+            
+            return `${year}-${month}-${day}`;
+        }
+        
+        // 日期时间格式验证函数
+        function validateDateTimeFormat(dateTimeStr) {
+            if (!dateTimeStr) return true;
+            
+            // 验证时间格式：YYYY-MM-DD HH:MM
+            const timeRegex = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/;
+            
+            return timeRegex.test(dateTimeStr);
+        }
+
         function renderVideos() {
             const tbody = document.getElementById('videos-table-body');
             const videos = allData.videos || [];
@@ -743,33 +831,68 @@
                     <td>${video.video_id}</td>
                     <td>${video.title}</td>
                     <td>${video.duration}</td>
-                    <td>${video.date}</td>
+                    <td>${formatDateTime(video.date)}</td>
                     <td><span class="status-badge status-${video.status === '已发布' ? 'published' : video.status === '异常' ? 'error' : 'warning'}">${video.status}</span></td>
                     <td>
-                        <button class="btn btn-primary btn-sm btn-action" onclick="editVideo(${index})">
-                            <i class="fa fa-edit"></i> 编辑
-                        </button>
-                        <button class="btn btn-danger btn-sm btn-action" onclick="deleteVideo(${index})">
-                            <i class="fa fa-trash"></i> 删除
-                        </button>
+                        <button class="btn btn-primary btn-sm btn-action" onclick="editVideo(${index})"><i class="fa fa-edit"></i> 编辑</button>
+                        <button class="btn btn-danger btn-sm btn-action" onclick="deleteVideo(${index})"><i class="fa fa-trash"></i> 删除</button>
                     </td>
                 </tr>
             `).join('');
+
         }
 
         // 显示更新预告编辑模态框
         function showUpdatePreviewModal() {
             const preview = allData.update_preview || {};
             document.getElementById('updateTitle').value = preview.title || '';
-            document.getElementById('updateTime').value = preview.time || '';
+            
+            // 处理时间值格式
+            const updateTime = document.getElementById('updateTime');
+            const timeValue = preview.time || '';
+            
+            if (timeValue) {
+                // 将YYYY-MM-DD HH:MM格式转换为YYYY-MM-DDThh:mm格式
+                const formattedTime = timeValue.replace(' ', 'T');
+                updateTime.value = formattedTime;
+            } else {
+                updateTime.value = '';
+            }
+            
+            // 根据现有时间值设置下拉列表
+            const timeSelect = document.getElementById('timeSelect');
+            const timeInputGroup = document.getElementById('timeInputGroup');
+            
+            if (updateTime.value) {
+                timeSelect.value = 'time';
+                timeInputGroup.style.display = 'block';
+            } else {
+                timeSelect.value = 'pending';
+                timeInputGroup.style.display = 'none';
+            }
+            
             $('#updatePreviewModal').modal('show');
         }
 
         // 保存更新预告
         function saveUpdatePreview() {
+            const updateTime = document.getElementById('updateTime').value;
+            let formattedTime = '';
+            
+            if (updateTime) {
+                // 将YYYY-MM-DDThh:mm格式转换为YYYY-MM-DD HH:MM格式
+                formattedTime = updateTime.replace('T', ' ');
+                
+                // 验证时间格式
+                if (!validateDateTimeFormat(formattedTime)) {
+                    alert('时间格式无效，请使用正确的格式：yyyy-mm-dd hh:mm');
+                    return;
+                }
+            }
+            
             allData.update_preview = {
                 title: document.getElementById('updateTitle').value,
-                time: document.getElementById('updateTime').value
+                time: formattedTime
             };
             renderUpdatePreview();
             $('#updatePreviewModal').modal('hide');
@@ -791,19 +914,33 @@
             document.getElementById('notificationTitle').value = notification.title;
             document.getElementById('notificationContent').value = notification.content;
             document.getElementById('notificationType').value = notification.type;
-            document.getElementById('notificationDate').value = notification.date;
+            // 确保日期格式为YYYY-MM-DD，适配date输入
+            let dateValue = notification.date;
+            if (dateValue.includes(' ')) {
+                dateValue = dateValue.split(' ')[0];
+            }
+            document.getElementById('notificationDate').value = dateValue;
             $('#notificationModal').modal('show');
         }
 
         // 保存通知
         function saveNotification() {
             const index = document.getElementById('notificationId').value;
+            let notificationDate = document.getElementById('notificationDate').value;
+            
+            // 验证日期格式（YYYY-MM-DD）
+            const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+            if (!dateRegex.test(notificationDate)) {
+                alert('日期格式无效，请使用正确的格式：yyyy-mm-dd');
+                return;
+            }
+            
             const notification = {
                 id: parseInt(index) + 1 || allData.notifications.length + 1,
                 title: document.getElementById('notificationTitle').value,
                 content: document.getElementById('notificationContent').value,
                 type: document.getElementById('notificationType').value,
-                date: document.getElementById('notificationDate').value
+                date: notificationDate
             };
 
             if (index) {
@@ -855,7 +992,12 @@
             document.getElementById('videoThumbnail').value = video.thumbnail;
             document.getElementById('videoTitle').value = video.title;
             document.getElementById('videoDuration').value = video.duration;
-            document.getElementById('videoDate').value = video.date;
+            // 转换YYYY-MM-DD HH:MM格式为YYYY-MM-DDThh:mm格式，适配datetime-local输入
+            let dateValue = video.date;
+            if (dateValue.includes(' ')) {
+                dateValue = dateValue.replace(' ', 'T');
+            }
+            document.getElementById('videoDate').value = dateValue;
             document.getElementById('videoStatus').value = video.status;
             document.getElementById('videoErrorReason').value = video.error_reason || '';
             document.getElementById('videoSpoiler').checked = video.spoiler || false;
@@ -865,6 +1007,19 @@
         // 保存视频
         function saveVideo() {
             const index = document.getElementById('videoIndex').value;
+            let videoDate = document.getElementById('videoDate').value;
+            
+            // 转换datetime-local格式为YYYY-MM-DD HH:MM
+            if (videoDate.includes('T')) {
+                videoDate = videoDate.replace('T', ' ');
+            }
+            
+            // 验证日期时间格式
+            if (!validateDateTimeFormat(videoDate)) {
+                alert('日期时间格式无效，请使用正确的格式：yyyy-mm-dd hh:mm');
+                return;
+            }
+            
             const video = {
                 game: document.getElementById('videoGame').value,
                 chapter: document.getElementById('videoChapter').value,
@@ -872,7 +1027,7 @@
                 thumbnail: document.getElementById('videoThumbnail').value,
                 title: document.getElementById('videoTitle').value,
                 duration: document.getElementById('videoDuration').value,
-                date: document.getElementById('videoDate').value,
+                date: videoDate,
                 status: document.getElementById('videoStatus').value,
                 tags: [document.getElementById('videoGame').value === 'undertale' ? 'Undertale' : 'Deltarune'],
                 error_reason: document.getElementById('videoStatus').value === '异常' ? document.getElementById('videoErrorReason').value : undefined,
@@ -912,7 +1067,38 @@
         // 复制JSON数据到剪贴板
         function copyJsonData() {
             try {
-                const jsonString = JSON.stringify(allData, null, 2);
+                // 创建数据副本，保持原始数据不变
+                const dataCopy = JSON.parse(JSON.stringify(allData));
+                
+                // 确保视频日期格式一致
+                if (dataCopy.videos && Array.isArray(dataCopy.videos)) {
+                    dataCopy.videos.forEach(video => {
+                        if (video.date) {
+                            video.date = formatDateTime(video.date);
+                        }
+                    });
+                }
+                
+                // 确保通知日期格式一致
+                if (dataCopy.notifications && Array.isArray(dataCopy.notifications)) {
+                    dataCopy.notifications.forEach(notification => {
+                        if (notification.date) {
+                            notification.date = formatDate(notification.date);
+                        }
+                    });
+                }
+                
+                // 确保更新预告时间格式一致
+                if (dataCopy.update_preview && dataCopy.update_preview.time) {
+                    dataCopy.update_preview.time = formatDateTime(dataCopy.update_preview.time);
+                }
+                
+                // 添加上次更新时间，精确到日
+                const now = new Date();
+                const lastUpdated = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+                dataCopy.last_updated = lastUpdated;
+                
+                const jsonString = JSON.stringify(dataCopy, null, 2);
                 navigator.clipboard.writeText(jsonString).then(() => {
                     // 显示复制成功模态框
                     $('#copySuccessModal').modal('show');

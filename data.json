@@ -1,17 +1,8 @@
 {
   "update_preview": {
     "title": "三角符文第四章 p1 攻略",
-    "time": "pending"
+    "time": "2026-02-17 00:00"
   },
-  "notifications": [
-    {
-      "id": 1,
-      "title": "⚠️ 通知",
-      "content": "暂时停更中！",
-      "type": "warning",
-      "date": "2026-01-05"
-    }
-  ],
   "videos": [
     {
       "game": "undertale",
@@ -20,9 +11,12 @@
       "thumbnail": "imgs/undertale0.jpg",
       "title": "🏚️废墟",
       "duration": "03:34",
-      "date": "2021年02月22日 11:25",
+      "date": "2021-02-22 11:25",
       "status": "已发布",
-      "tags": ["Undertale"]
+      "tags": [
+        "Undertale"
+      ],
+      "spoiler": false
     },
     {
       "game": "undertale",
@@ -31,9 +25,11 @@
       "thumbnail": "imgs/undertale1.jpg",
       "title": "❄️雪镇",
       "duration": "06:27",
-      "date": "2021年07月02日 21:23",
+      "date": "2021-07-02 21:23",
       "status": "已发布",
-      "tags": ["Undertale"]
+      "tags": [
+        "Undertale"
+      ]
     },
     {
       "game": "undertale",
@@ -42,9 +38,11 @@
       "thumbnail": "imgs/undertale2.jpg",
       "title": "🏞️瀑布",
       "duration": "10:20",
-      "date": "2021年07月19日 11:34",
+      "date": "2021-07-19 11:34",
       "status": "已发布",
-      "tags": ["Undertale"]
+      "tags": [
+        "Undertale"
+      ]
     },
     {
       "game": "undertale",
@@ -53,10 +51,12 @@
       "thumbnail": "imgs/undertale3.jpg",
       "title": "🌋热域",
       "duration": "12:03",
-      "date": "2021年08月24日 14:26",
+      "date": "2021-08-24 14:26",
       "status": "异常",
       "error_reason": "视频内容审核未通过",
-      "tags": ["Undertale"]
+      "tags": [
+        "Undertale"
+      ]
     },
     {
       "game": "undertale",
@@ -65,9 +65,11 @@
       "thumbnail": "imgs/undertale4.jpg",
       "title": "⏳核心+中立线",
       "duration": "08:46",
-      "date": "2021年11月21日 17:09",
+      "date": "2021-11-21 17:09",
       "status": "已发布",
-      "tags": ["Undertale"]
+      "tags": [
+        "Undertale"
+      ]
     },
     {
       "game": "undertale",
@@ -76,9 +78,11 @@
       "thumbnail": "imgs/undertale5.jpg",
       "title": "🕊️和平线",
       "duration": "10:48",
-      "date": "2021年11月26日 21:34",
+      "date": "2021-11-26 21:34",
       "status": "已发布",
-      "tags": ["Undertale"]
+      "tags": [
+        "Undertale"
+      ]
     },
     {
       "game": "undertale",
@@ -87,9 +91,11 @@
       "thumbnail": "imgs/undertale6.jpg",
       "title": "🔪屠杀线",
       "duration": "49:59",
-      "date": "2022年02月15日 09:43",
+      "date": "2022-02-15 09:43",
       "status": "已发布",
-      "tags": ["Undertale"],
+      "tags": [
+        "Undertale"
+      ],
       "spoiler": true
     },
     {
@@ -99,9 +105,11 @@
       "thumbnail": "imgs/deltarune.jpg",
       "title": "第1章第1集",
       "duration": "11:20",
-      "date": "2022年4月9日 21:39",
+      "date": "2022-04-09 21:39",
       "status": "已发布",
-      "tags": ["Deltarune"]
+      "tags": [
+        "Deltarune"
+      ]
     },
     {
       "game": "deltarune",
@@ -110,9 +118,11 @@
       "thumbnail": "imgs/deltarune.jpg",
       "title": "第1章第2集",
       "duration": "12:48",
-      "date": "2022年4月16日 17:41",
+      "date": "2022-04-16 17:41",
       "status": "已发布",
-      "tags": ["Deltarune"]
+      "tags": [
+        "Deltarune"
+      ]
     },
     {
       "game": "deltarune",
@@ -121,9 +131,11 @@
       "thumbnail": "imgs/deltarune.jpg",
       "title": "第1章第3集",
       "duration": "16:19",
-      "date": "2022年4月20日 14:02",
+      "date": "2022-04-20 14:02",
       "status": "已发布",
-      "tags": ["Deltarune"]
+      "tags": [
+        "Deltarune"
+      ]
     },
     {
       "game": "deltarune",
@@ -132,9 +144,11 @@
       "thumbnail": "imgs/deltarune.jpg",
       "title": "第1章第4集",
       "duration": "16:34",
-      "date": "2022年7月4日 21:29",
+      "date": "2022-07-04 21:29",
       "status": "已发布",
-      "tags": ["Deltarune"]
+      "tags": [
+        "Deltarune"
+      ]
     },
     {
       "game": "deltarune",
@@ -143,9 +157,11 @@
       "thumbnail": "imgs/deltarune.jpg",
       "title": "第1章第5集",
       "duration": "8:41",
-      "date": "2022年9月13日 22:04",
+      "date": "2022-09-13 22:04",
       "status": "已发布",
-      "tags": ["Deltarune"]
+      "tags": [
+        "Deltarune"
+      ]
     },
     {
       "game": "deltarune",
@@ -154,9 +170,11 @@
       "thumbnail": "imgs/deltarune.jpg",
       "title": "第1章第6集",
       "duration": "19:01",
-      "date": "2022年9月25日 22:00",
+      "date": "2022-09-25 22:00",
       "status": "已发布",
-      "tags": ["Deltarune"]
+      "tags": [
+        "Deltarune"
+      ]
     },
     {
       "game": "deltarune",
@@ -165,9 +183,11 @@
       "thumbnail": "imgs/deltarune2.jpg",
       "title": "第2章第1集",
       "duration": "8:46",
-      "date": "2022年10月7日 22:00",
+      "date": "2022-10-07 22:00",
       "status": "已发布",
-      "tags": ["Deltarune"]
+      "tags": [
+        "Deltarune"
+      ]
     },
     {
       "game": "deltarune",
@@ -176,9 +196,11 @@
       "thumbnail": "imgs/deltarune2.jpg",
       "title": "第2章第2集",
       "duration": "8:51",
-      "date": "2023年1月20日 22:00",
+      "date": "2023-01-20 22:00",
       "status": "已发布",
-      "tags": ["Deltarune"]
+      "tags": [
+        "Deltarune"
+      ]
     },
     {
       "game": "deltarune",
@@ -187,9 +209,11 @@
       "thumbnail": "imgs/deltarune2.jpg",
       "title": "第2章第3集",
       "duration": "10:05",
-      "date": "2023年2月15日 22:00",
+      "date": "2023-02-15 22:00",
       "status": "已发布",
-      "tags": ["Deltarune"]
+      "tags": [
+        "Deltarune"
+      ]
     },
     {
       "game": "deltarune",
@@ -198,9 +222,11 @@
       "thumbnail": "imgs/deltarune2.jpg",
       "title": "第2章第4集",
       "duration": "13:12",
-      "date": "2023年2月27日 22:00",
+      "date": "2023-02-27 22:00",
       "status": "已发布",
-      "tags": ["Deltarune"]
+      "tags": [
+        "Deltarune"
+      ]
     },
     {
       "game": "deltarune",
@@ -209,9 +235,11 @@
       "thumbnail": "imgs/deltarune2.jpg",
       "title": "第2章第5集",
       "duration": "11:16",
-      "date": "2023年3月14日 22:00",
+      "date": "2023-03-14 22:00",
       "status": "已发布",
-      "tags": ["Deltarune"]
+      "tags": [
+        "Deltarune"
+      ]
     },
     {
       "game": "deltarune",
@@ -220,9 +248,11 @@
       "thumbnail": "imgs/deltarune2.jpg",
       "title": "第2章第6集",
       "duration": "10:27",
-      "date": "2023年3月27日 22:00",
+      "date": "2023-03-27 22:00",
       "status": "已发布",
-      "tags": ["Deltarune"]
+      "tags": [
+        "Deltarune"
+      ]
     },
     {
       "game": "deltarune",
@@ -231,9 +261,11 @@
       "thumbnail": "imgs/deltarune2.jpg",
       "title": "第2章第7集",
       "duration": "7:29",
-      "date": "2023年4月10日 22:00",
+      "date": "2023-04-10 22:00",
       "status": "已发布",
-      "tags": ["Deltarune"]
+      "tags": [
+        "Deltarune"
+      ]
     },
     {
       "game": "deltarune",
@@ -242,9 +274,11 @@
       "thumbnail": "imgs/deltarune2.jpg",
       "title": "第2章第8集",
       "duration": "7:34",
-      "date": "2023年5月1日 22:00",
+      "date": "2023-05-01 22:00",
       "status": "已发布",
-      "tags": ["Deltarune"]
+      "tags": [
+        "Deltarune"
+      ]
     },
     {
       "game": "deltarune",
@@ -253,9 +287,11 @@
       "thumbnail": "imgs/deltarune2.jpg",
       "title": "第2章第9集",
       "duration": "11:15",
-      "date": "2023年5月15日 22:00",
+      "date": "2023-05-15 22:00",
       "status": "已发布",
-      "tags": ["Deltarune"]
+      "tags": [
+        "Deltarune"
+      ]
     },
     {
       "game": "deltarune",
@@ -264,9 +300,11 @@
       "thumbnail": "imgs/deltarune2.jpg",
       "title": "第2章第10集",
       "duration": "11:15",
-      "date": "2023年6月5日 22:00",
+      "date": "2023-06-05 22:00",
       "status": "已发布",
-      "tags": ["Deltarune"]
+      "tags": [
+        "Deltarune"
+      ]
     },
     {
       "game": "deltarune",
@@ -275,9 +313,11 @@
       "thumbnail": "imgs/deltarune2.jpg",
       "title": "第2章第11集",
       "duration": "14:46",
-      "date": "2023年7月31日 22:00",
+      "date": "2023-07-31 22:00",
       "status": "已发布",
-      "tags": ["Deltarune"]
+      "tags": [
+        "Deltarune"
+      ]
     },
     {
       "game": "deltarune",
@@ -286,9 +326,11 @@
       "thumbnail": "imgs/deltarune2.jpg",
       "title": "第2章第12集",
       "duration": "12:03",
-      "date": "2023年8月23日 22:00",
+      "date": "2023-08-23 22:00",
       "status": "已发布",
-      "tags": ["Deltarune"]
+      "tags": [
+        "Deltarune"
+      ]
     },
     {
       "game": "deltarune",
@@ -297,9 +339,11 @@
       "thumbnail": "imgs/deltarune2.jpg",
       "title": "第2章第13集",
       "duration": "9:30",
-      "date": "2023年9月11日 22:00",
+      "date": "2023-09-11 22:00",
       "status": "已发布",
-      "tags": ["Deltarune"]
+      "tags": [
+        "Deltarune"
+      ]
     },
     {
       "game": "deltarune",
@@ -308,9 +352,11 @@
       "thumbnail": "imgs/deltarune2.jpg",
       "title": "第2章第14集",
       "duration": "16:15",
-      "date": "2023年9月25日 22:00",
+      "date": "2023-09-25 22:00",
       "status": "已发布",
-      "tags": ["Deltarune"]
+      "tags": [
+        "Deltarune"
+      ]
     },
     {
       "game": "deltarune",
@@ -319,9 +365,11 @@
       "thumbnail": "imgs/deltarune2.jpg",
       "title": "第2章第15集",
       "duration": "14:22",
-      "date": "2023年10月23日 22:00",
+      "date": "2023-10-23 22:00",
       "status": "已发布",
-      "tags": ["Deltarune"]
+      "tags": [
+        "Deltarune"
+      ]
     },
     {
       "game": "deltarune",
@@ -330,9 +378,12 @@
       "thumbnail": "imgs/deltarune2.jpg",
       "title": "第2章冰封线第1集",
       "duration": "9:28",
-      "date": "2024年1月1日 00:00",
+      "date": "2024-01-01 00:00",
       "status": "已发布",
-      "tags": ["Deltarune", "冰封线"]
+      "tags": [
+        "Deltarune",
+        "冰封线"
+      ]
     },
     {
       "game": "deltarune",
@@ -341,9 +392,12 @@
       "thumbnail": "imgs/deltarune2.jpg",
       "title": "第2章冰封线第2集",
       "duration": "9:51",
-      "date": "2024年1月29日 22:00",
+      "date": "2024-01-29 22:00",
       "status": "已发布",
-      "tags": ["Deltarune", "冰封线"]
+      "tags": [
+        "Deltarune",
+        "冰封线"
+      ]
     },
     {
       "game": "deltarune",
@@ -352,9 +406,12 @@
       "thumbnail": "imgs/deltarune2.jpg",
       "title": "第2章冰封线第3集",
       "duration": "14:30",
-      "date": "2024年3月4日 22:00",
+      "date": "2024-03-04 22:00",
       "status": "已发布",
-      "tags": ["Deltarune", "冰封线"]
+      "tags": [
+        "Deltarune",
+        "冰封线"
+      ]
     },
     {
       "game": "deltarune",
@@ -363,9 +420,12 @@
       "thumbnail": "imgs/deltarune2.jpg",
       "title": "第2章冰封线第4集",
       "duration": "7:57",
-      "date": "2024年4月15日 21:59",
+      "date": "2024-04-15 21:59",
       "status": "已发布",
-      "tags": ["Deltarune", "冰封线"]
+      "tags": [
+        "Deltarune",
+        "冰封线"
+      ]
     },
     {
       "game": "deltarune",
@@ -374,9 +434,11 @@
       "thumbnail": "imgs/deltarune3.jpg",
       "title": "第3章第1集",
       "duration": "28:33",
-      "date": "2025年6月30日 22:00",
+      "date": "2025-06-30 22:00",
       "status": "已发布",
-      "tags": ["Deltarune"]
+      "tags": [
+        "Deltarune"
+      ]
     },
     {
       "game": "deltarune",
@@ -385,9 +447,11 @@
       "thumbnail": "imgs/deltarune3.jpg",
       "title": "第3章第2集",
       "duration": "10:50",
-      "date": "2025年7月14日 22:00",
+      "date": "2025-07-14 22:00",
       "status": "已发布",
-      "tags": ["Deltarune"]
+      "tags": [
+        "Deltarune"
+      ]
     },
     {
       "game": "deltarune",
@@ -396,9 +460,11 @@
       "thumbnail": "imgs/deltarune3.jpg",
       "title": "第3章第3集",
       "duration": "23:08",
-      "date": "2025年7月21日 22:00",
+      "date": "2025-07-21 22:00",
       "status": "已发布",
-      "tags": ["Deltarune"]
+      "tags": [
+        "Deltarune"
+      ]
     },
     {
       "game": "deltarune",
@@ -407,9 +473,11 @@
       "thumbnail": "imgs/deltarune3.jpg",
       "title": "第3章第4集",
       "duration": "16:59",
-      "date": "2025年7月28日 22:00",
+      "date": "2025-07-28 22:00",
       "status": "已发布",
-      "tags": ["Deltarune"]
+      "tags": [
+        "Deltarune"
+      ]
     },
     {
       "game": "deltarune",
@@ -418,9 +486,11 @@
       "thumbnail": "imgs/deltarune3.jpg",
       "title": "第3章第5集",
       "duration": "26:17",
-      "date": "2025年8月4日 22:00",
+      "date": "2025-08-04 22:00",
       "status": "已发布",
-      "tags": ["Deltarune"]
+      "tags": [
+        "Deltarune"
+      ]
     },
     {
       "game": "deltarune",
@@ -429,9 +499,11 @@
       "thumbnail": "imgs/deltarune3.jpg",
       "title": "第3章第6集",
       "duration": "29:08",
-      "date": "2025年8月11日 22:00",
+      "date": "2025-08-11 22:00",
       "status": "已发布",
-      "tags": ["Deltarune"]
+      "tags": [
+        "Deltarune"
+      ]
     },
     {
       "game": "deltarune",
@@ -440,10 +512,22 @@
       "thumbnail": "imgs/deltarune-analysis.jpg",
       "title": "剧情分析",
       "duration": "6:36",
-      "date": "2024年6月3日 22:00",
+      "date": "2024-06-03 22:00",
       "status": "已发布",
-      "tags": ["Deltarune"],
+      "tags": [
+        "Deltarune"
+      ],
       "spoiler": true
     }
-  ]
+  ],
+  "notifications": [
+    {
+      "id": 1,
+      "title": "恢复更新",
+      "content": "更新已恢复！下次更新将在春节！",
+      "type": "info",
+      "date": "2025-01-06"
+    }
+  ],
+  "last_updated": "2026-01-06"
 }

@@ -30,8 +30,8 @@ async function loadVideosData() {
                 setTimeout(() => {
                     const modal = document.getElementById('custom-confirm');
                     if (modal) {
-                        // 格式化本地数据的最后更新日期
-                        const lastUpdatedDate = '2026年1月5日'; // 从本地数据获取或硬编码
+                        // 从本地数据获取最后更新日期
+                        const lastUpdatedDate = localData.last_updated || '以前';
                         const messageElement = document.querySelector('.custom-confirm-message');
                         const titleElement = document.querySelector('.custom-confirm-title');
                         const cancelBtn = document.getElementById('confirm-cancel');
@@ -41,7 +41,7 @@ async function loadVideosData() {
                         }
                         
                         if (messageElement) {
-                            messageElement.textContent = `无法获取最新数据，已回滚到${lastUpdatedDate}的数据，所以此站点目前的信息很可能已经过时，请联系站点管理员解决此问题。`;
+                            messageElement.textContent = `无法获取最新数据，已回滚到 ${lastUpdatedDate} 的数据，所以此站点目前的信息很可能已经过时，请联系站点管理员解决此问题。`;
                         }
                         
                         if (cancelBtn) {
@@ -78,15 +78,10 @@ function renderNotificationsToContainer(notifications, container) {
         const notificationItem = document.createElement('div');
         notificationItem.className = `warn-card ${notification.type}`;
         
-        // 格式化日期，将YYYY-MM-DD转换为YYYY年MM月DD日
+        // YYYY-MM-DD
         let formattedDate = '';
         if (notification.date) {
-            const dateParts = notification.date.split('-');
-            if (dateParts.length === 3) {
-                formattedDate = `${dateParts[0]}年${dateParts[1]}月${dateParts[2]}日`;
-            } else {
-                formattedDate = notification.date;
-            }
+            formattedDate = formatDate(notification.date);
         }
         
         notificationItem.innerHTML = `
@@ -133,7 +128,7 @@ function renderVideosToContainer(videos, container) {
                 <div class="video-title">${video.title}</div>
                 <div class="video-meta">
                     <span class="video-date">
-                        ${video.status === '异常' ? `<span class="${statusClass}" title="${video.error_reason || '审核未通过'}">${video.status}</span>` : video.status} ${video.date}
+                        ${video.status === '异常' ? `<span class="${statusClass}" title="${video.error_reason || '审核未通过'}">${video.status}</span>` : video.status} ${formatDateTime(video.date)}
                     </span>
                     <span class="video-game-tag">${video.tags[0]}</span>
                 </div>
@@ -142,6 +137,48 @@ function renderVideosToContainer(videos, container) {
         
         container.appendChild(videoItem);
     });
+    
+    // 重新初始化状态警告提示，因为动态生成了status-warning元素
+    initStatusWarningTips();
+}
+
+// 日期时间格式化函数：将日期对象或字符串格式化为标准日期时间格式
+// includeTime: 是否包含时间部分（默认true）
+function formatDateTime(dateStr, includeTime = true) {
+    if (!dateStr) return '';
+    
+    // 处理不同格式的日期字符串
+    let dateObj;
+    if (dateStr.includes('T')) {
+        // YYYY-MM-DDThh:mm
+        dateObj = new Date(dateStr);
+    } else if (dateStr.includes(' ')) {
+        // YYYY-MM-DD HH:MM
+        dateObj = new Date(dateStr.replace(' ', 'T'));
+    } else {
+        // YYYY-MM-DD
+        dateObj = new Date(dateStr);
+    }
+    
+    if (isNaN(dateObj.getTime())) return dateStr;
+    
+    const year = dateObj.getFullYear();
+    const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+    const day = String(dateObj.getDate()).padStart(2, '0');
+    
+    if (!includeTime) {
+        return `${year}-${month}-${day}`;
+    }
+    
+    const hours = String(dateObj.getHours()).padStart(2, '0');
+    const minutes = String(dateObj.getMinutes()).padStart(2, '0');
+    
+    return `${year}-${month}-${day} ${hours}:${minutes}`;
+}
+
+// 日期格式化函数：将日期对象或字符串格式化为标准日期格式（仅日期，无时间）
+function formatDate(dateStr) {
+    return formatDateTime(dateStr, false);
 }
 
 // 渲染更新预告时间
@@ -160,7 +197,7 @@ function renderUpdatePreview() {
         const status = updatePreviewData.status || (updatePreviewData.time && updatePreviewData.time !== 'pending' ? 'scheduled' : 'pending');
         
         if (status === 'scheduled' && updatePreviewData.time && updatePreviewData.time !== 'pending') {
-            updateTimeElement.textContent = `更新时间：${updatePreviewData.time}`;
+            updateTimeElement.textContent = `更新时间：${formatDateTime(updatePreviewData.time)}`;
             updateTimeElement.dataset.status = 'scheduled';
         } else {
             updateTimeElement.textContent = '更新时间待定';
@@ -220,6 +257,20 @@ function initNotifications() {
     const notificationContainer = document.getElementById('notifications-container');
     if (notificationContainer) {
         renderNotificationsToContainer(allNotificationsData, notificationContainer);
+        
+        // 检查是否存在warning类型的通知
+        const hasWarningNotification = allNotificationsData.some(notification => notification.type === 'warning');
+        const updateCard = document.querySelector('.update-card');
+        
+        if (updateCard) {
+            if (hasWarningNotification) {
+                // 有warning通知时，使用默认的橙色发光
+                updateCard.classList.remove('no-warning');
+            } else {
+                // 没有warning通知时，使用蓝色发光
+                updateCard.classList.add('no-warning');
+            }
+        }
     }
 }
 
@@ -257,14 +308,23 @@ function initRuntimeCounter() {
 function initCustomConfirm() {
     const confirmModal = document.getElementById('custom-confirm');
     const confirmOkBtn = document.getElementById('confirm-ok');
+    const confirmCancelBtn = document.getElementById('confirm-cancel');
     
-    if (!confirmModal || !confirmOkBtn) return;
+    if (!confirmModal || !confirmOkBtn || !confirmCancelBtn) return;
     
     // 确定按钮点击事件
     confirmOkBtn.addEventListener('click', function() {
         hideCustomConfirm();
         if (window.customConfirmCallback) {
             window.customConfirmCallback(true);
+        }
+    });
+    
+    // 取消按钮点击事件
+    confirmCancelBtn.addEventListener('click', function() {
+        hideCustomConfirm();
+        if (window.customConfirmCallback) {
+            window.customConfirmCallback(false);
         }
     });
     
@@ -357,6 +417,22 @@ function customConfirm(message, title = '提示', confirmText = '确定', cancel
     });
 }
 
+// 处理管理入口点击事件
+function handleAdminClick(event) {
+    event.preventDefault();
+    
+    customConfirm(
+        '注意：此页面为 JSON 数据预览界面，仅用于开发或配置参考。普通用户建议取消访问，无需在此页面进行任何操作。',
+        '此页面可能不适合你',
+        '继续访问',
+        '取消访问'
+    ).then((confirmed) => {
+        if (confirmed) {
+            window.location.href = 'admin.html';
+        }
+    });
+}
+
 // 桌面端顶栏显示功能
 function initDesktopTopBar() {
     // 检查是否是移动端视图
@@ -367,12 +443,10 @@ function initDesktopTopBar() {
             if (topSelector) {
                 // 先重置状态确保动画能触发
                 topSelector.classList.remove('visible');
-                // 强制重排
-                topSelector.offsetHeight;
-                // 再添加visible类触发动画
-                setTimeout(() => {
+                // 使用requestAnimationFrame代替强制重排，让浏览器在适当的时机执行动画
+                requestAnimationFrame(() => {
                     topSelector.classList.add('visible');
-                }, 10);
+                });
             }
         }
     }
@@ -432,11 +506,15 @@ function initGameSelection() {
                         videoContainer.classList.remove('visible');
                         videoContainer.style.opacity = '0';
                         videoContainer.style.transform = 'translateY(20px)';
-                        videoContainer.offsetHeight;
                         
                         // 显示视频容器
                         videoContainer.classList.remove('hidden');
                         videoContainer.classList.remove('fade-out');
+                        
+                        // 使用requestAnimationFrame代替强制重排
+                        requestAnimationFrame(() => {
+                            videoContainer.classList.add('visible');
+                        });
                         
                         // 筛选并渲染视频
                         const undertaleVideos = allVideosData.filter(v => v.game === 'undertale');
@@ -461,10 +539,13 @@ function initGameSelection() {
                         chapterSelector.classList.remove('visible');
                         chapterSelector.style.opacity = '0';
                         chapterSelector.style.transform = 'translateY(20px)';
-                        // 强制重排
-                        chapterSelector.offsetHeight;
                         
                         chapterSelector.classList.remove('hidden');
+                        
+                        // 使用requestAnimationFrame代替强制重排
+                        requestAnimationFrame(() => {
+                            chapterSelector.classList.add('visible');
+                        });
                         
                         // 隐藏视频容器并重置动画
                         videoContainer.classList.add('hidden');
@@ -515,11 +596,15 @@ function initChapterSelection() {
                     videoContainer.classList.remove('visible');
                     videoContainer.style.opacity = '0';
                     videoContainer.style.transform = 'translateY(20px)';
-                    videoContainer.offsetHeight;
                     
                     // 直接显示视频容器
                     videoContainer.classList.remove('hidden');
                     videoContainer.classList.remove('fade-out');
+                    
+                    // 使用requestAnimationFrame代替强制重排
+                    requestAnimationFrame(() => {
+                        videoContainer.classList.add('visible');
+                    });
                     
                     // 筛选并渲染视频
                     const deltaruneVideos = allVideosData.filter(v => v.game === 'deltarune' && (chapter === 'all' || v.chapter === chapter));
@@ -714,14 +799,12 @@ function initVideoFilter() {
                         item.classList.remove('visible');
                         item.style.opacity = '0';
                         item.style.transform = 'translateY(20px)';
-                        // 强制重排
-                        item.offsetHeight;
                         // 触发动画
-                        setTimeout(() => {
+                        requestAnimationFrame(() => {
                             item.classList.add('visible');
                             item.style.opacity = '1';
                             item.style.transform = 'translateY(0)';
-                        }, 10);
+                        });
                     } else {
                         item.style.display = 'none';
                         item.classList.remove('visible');
@@ -833,12 +916,13 @@ function showTopSelector(selectorId) {
                             gameSelector.classList.remove('visible');
                             gameSelector.style.opacity = '0';
                             gameSelector.style.transform = 'translateY(20px)';
-                            // 强制重排
-                            gameSelector.offsetHeight;
                             
                             gameSelector.classList.remove('hidden');
-                            // 立即检查并添加visible类，确保动画触发
-                            checkFadeElements();
+                            // 使用requestAnimationFrame代替强制重排
+                            requestAnimationFrame(() => {
+                                // 立即检查并添加visible类，确保动画触发
+                                checkFadeElements();
+                            });
                         }
                         
                         // 平滑滚动到顶部
@@ -847,13 +931,11 @@ function showTopSelector(selectorId) {
                 });
             }
             
-            // 强制重排以确保过渡正确触发
-            selector.offsetHeight;
-            
-            // 显示顶部选择框（触发渐显动画）
-            setTimeout(() => {
+            // 使用requestAnimationFrame代替强制重排
+            requestAnimationFrame(() => {
+                // 显示顶部选择框（触发渐显动画）
                 selector.classList.add('visible');
-            }, 10);
+            });
             
             // 平滑滚动到页面顶部
             window.scrollTo({
@@ -924,12 +1006,13 @@ function showTopSelector(selectorId) {
                                 gameSelector.classList.remove('visible');
                                 gameSelector.style.opacity = '0';
                                 gameSelector.style.transform = 'translateY(20px)';
-                                // 强制重排
-                                gameSelector.offsetHeight;
                                 
                                 gameSelector.classList.remove('hidden');
-                                // 立即检查并添加visible类，确保动画触发
-                                checkFadeElements();
+                                // 使用requestAnimationFrame代替强制重排
+                                requestAnimationFrame(() => {
+                                    // 立即检查并添加visible类，确保动画触发
+                                    checkFadeElements();
+                                });
                             }
                             
                             // 平滑滚动到顶部
@@ -963,8 +1046,8 @@ function animateVideoItems() {
             // 强制重排
             item.offsetHeight;
             
-            // 缩短动画时间和延迟间隔
-            item.style.transition = `opacity 0.3s ease ${index * 0.05}s, transform 0.3s ease ${index * 0.05}s`;
+            // 调慢动画时间和延迟间隔
+            item.style.transition = `opacity 0.8s ease ${index * 0.10}s, transform 0.8s ease ${index * 0.15}s`;
             
             // 触发动画
             item.classList.add('visible');
@@ -974,7 +1057,7 @@ function animateVideoItems() {
             // 动画完成后重置过渡效果为默认值
             setTimeout(() => {
                 item.style.transition = '';
-            }, 300 + (index * 50)); // 300ms为动画时长，index*50ms为延迟补偿
+            }, 800 + (index * 100)); // 800ms为动画时长，index*100ms为延迟补偿
             
             // 检查是否为剧透视频，如果是则添加剧透标签
             const videoThumbnail = item.querySelector('.video-thumbnail');
@@ -1149,6 +1232,9 @@ function initSmoothScroll() {
             e.preventDefault();
             
             const targetId = this.getAttribute('href');
+            if (targetId === '#') {
+                return;
+            }
             const targetElement = document.querySelector(targetId);
             
             if (targetElement) {
@@ -1513,8 +1599,8 @@ document.addEventListener('DOMContentLoaded', initStatusWarningTips);
 
 // 随机显示推荐视频
 function loadRecommendedVideos() {
-    // 使用全局变量allVideosData而不是重新加载数据
-    const allVideos = allVideosData;
+    // 使用全局变量allVideosData的副本，避免影响原始顺序
+    const allVideos = [...allVideosData];
     
     if (allVideos.length === 0) return;
     

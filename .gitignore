@@ -23,6 +23,7 @@ yarn-error.log*
 
 # 依赖
 node_modules/
+.wrangler/
 
 # 构建输出
 dist/
