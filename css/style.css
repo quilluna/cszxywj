@@ -879,6 +879,26 @@ p {
         pointer-events: none;
         transition: all var(--transition-normal) ease;
     }
+    
+    /* 移动端卡片样式调整 */
+    .update-section {
+        padding: var(--spacing-md);
+    }
+    
+    .profile预告 {
+        padding: var(--spacing-sm);
+    }
+    
+    .update-subcard {
+        padding: var(--spacing-sm);
+        min-width: 100%;
+    }
+    
+    .update-title {
+        font-size: 1rem;
+        white-space: normal;
+        line-height: 1.3;
+    }
 }
 
 .top-selector .selector-container {
@@ -987,6 +1007,7 @@ p {
     border-radius: 50%;
     cursor: pointer;
     font-size: 20px;
+    color: var(--text-dark);
     transition: all var(--transition-normal);
     position: relative;
 }
@@ -1077,6 +1098,32 @@ p {
     font-size: 0.9rem;
     color: var(--text-dark);
     font-weight: var(--subtitle-font-weight);
+}
+
+/* 刷新数据按钮样式 */
+.refresh-data-btn {
+    background: transparent;
+    border: 1px solid var(--border-light);
+    border-radius: 4px;
+    padding: 4px 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    color: var(--text-dark);
+}
+
+.refresh-data-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: rotate(15deg);
+}
+
+/* 深色模式下的刷新数据按钮样式 */
+:root[data-theme="dark"] .refresh-data-btn {
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+:root[data-theme="dark"] .refresh-data-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
 }
 
 /* 切换按钮样式（用于音乐和音效） */
@@ -1414,25 +1461,21 @@ p {
 
 /* 更新预告区域 */
 .update-section {
-    margin-bottom: var(--spacing-xxl);
-}
-
-.update-card {
+    margin-bottom: var(--spacing-xl);
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 0 var(--spacing-md);
     background: var(--card-bg);
     padding: var(--spacing-xl);
     border-radius: var(--border-radius);
     border: 1px solid var(--border-light);
     box-shadow: var(--shadow-lg);
     transition: all var(--transition-normal);
+    width: 100%;
 }
 
-.update-card:hover {
-    box-shadow: 0 0 20px var(--accent-orange), 0 20px 40px rgba(0, 0, 0, 0.1);
-    border-color: var(--accent-orange);
-}
-
-/* 当没有warning通知时，update-card使用蓝色发光 */
-.update-card.no-warning:hover {
+.update-section:hover {
     box-shadow: 0 0 20px var(--primary-blue), 0 20px 40px rgba(0, 0, 0, 0.1);
     border-color: var(--primary-blue);
 }
@@ -1443,6 +1486,7 @@ p {
     border-radius: var(--border-radius-sm);
     border: 1px solid var(--border-light);
     box-shadow: var(--shadow-sm);
+    text-align: center;
 }
 
 .profile预告 h4 {
@@ -1453,6 +1497,7 @@ p {
     display: flex;
     align-items: center;
     gap: var(--spacing-xs);
+    justify-content: center;
 }
 
 .profile预告 p {
@@ -1486,8 +1531,8 @@ p {
 }
 
 .update-countdown {
-    color: var(--text-dim);
-    font-size: 0.75rem;
+    color: var(--text-light);
+    font-size: 0.65rem;
     margin: 0;
     font-style: italic;
 }
@@ -1862,7 +1907,7 @@ p {
 }
 
 .chapter-link::after {
-    content: '▶';
+    content: '\f04b';
     position: absolute;
     right: var(--spacing-md);
     top: 50%;

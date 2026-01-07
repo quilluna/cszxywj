@@ -6,7 +6,8 @@
     <title>传说之下攻略站 - Undertale & Deltarune</title>
     <link rel="icon" href="imgs/heart.png" type="image/png">
     <link rel="stylesheet" href="css/style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link href="https://fonts.loli.net/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://lib.baomitu.com/font-awesome/7.0.0/css/all.min.css">
     <script src="js/includes.js"></script>
 </head>
 <body>
@@ -31,21 +32,18 @@
             </div>
         </section>
         
+        <!-- 通知区域 -->
+        <section class="update-section">
+            <div id="notifications-container"></div>
+        </section>
+        
         <!-- 更新预告区域 -->
         <section class="update-section">
-            <div class="container">
-                <div class="update-card">
-                    <div id="notifications-container"></div>
-                    
-                    <div class="profile预告">
-                        <h4>📢 更新预告</h4>
-                        <div class="update-subcard">
-                            <h5 class="update-title">三角符文第四章 p1 攻略</h5>
-                            <p class="update-time" data-status="pending">更新时间待定</p>
-                            <p class="update-countdown" id="countdown-timer">正在计算...</p>
-                        </div>
-                    </div>
-                </div>
+            <div class="profile预告">
+                <h4><i class="fas fa-bullhorn"></i> 更新预告</h4>
+                <h5 class="update-title">三角符文第四章 p1 攻略</h5>
+                <p class="update-time" data-status="pending">更新时间待定</p>
+                <p class="update-countdown" id="countdown-timer">正在计算...</p>
             </div>
         </section>
 

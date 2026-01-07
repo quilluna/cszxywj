@@ -5,15 +5,47 @@ let updatePreviewData = {};
 
 // 从Cloudflare Functions API加载数据
 async function loadVideosData() {
+    // 检查本地缓存
+    const cachedData = localStorage.getItem('videosData');
+    const cachedTime = localStorage.getItem('videosDataTimestamp');
+    const now = Date.now();
+    const cacheExpiry = 60 * 60 * 1000; // 1小时缓存
+    
+    // 如果缓存有效，直接使用
+    if (cachedData && cachedTime && (now - parseInt(cachedTime)) < cacheExpiry) {
+        console.log('使用缓存数据');
+        const parsedData = JSON.parse(cachedData);
+        allVideosData = parsedData.videos || [];
+        allNotificationsData = parsedData.notifications || [];
+        updatePreviewData = parsedData.updatePreview || {};
+        return { videos: allVideosData, notifications: allNotificationsData, updatePreview: updatePreviewData };
+    }
+    
     try {
-        const response = await fetch('/api/fetch_data');
+        // Cloudflare Worker API端点
+        const workerUrl = 'https://api.bo173.dpdns.org/api/fetch_data';
+        const response = await fetch(workerUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({})
+        });
         if (!response.ok) {
             throw new Error('网络请求失败');
         }
-        const data = await response.json();
+        const responseData = await response.json();
+        const data = responseData.data || {};
         allVideosData = data.videos || [];
         allNotificationsData = data.notifications || [];
         updatePreviewData = data.update_preview || {};
+        
+        // 缓存数据
+        const cacheData = { videos: allVideosData, notifications: allNotificationsData, updatePreview: updatePreviewData };
+        localStorage.setItem('videosData', JSON.stringify(cacheData));
+        localStorage.setItem('videosDataTimestamp', now.toString());
+        console.log('数据已缓存');
+        
         return { videos: allVideosData, notifications: allNotificationsData, updatePreview: updatePreviewData };
     } catch (error) {
         console.error('加载数据失败:', error);
@@ -668,6 +700,52 @@ function initSettingsMenu() {
             settingsMenu.classList.remove('active');
         }
     });
+    
+    // 刷新数据按钮功能
+    const refreshDataBtn = document.getElementById('refreshDataBtn');
+    if (refreshDataBtn) {
+        refreshDataBtn.addEventListener('click', async () => {
+            try {
+                // 显示加载状态
+                refreshDataBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+                refreshDataBtn.disabled = true;
+                
+                // 调用clear_cache端点
+                const workerUrl = 'https://api.bo173.dpdns.org/api/clear_cache';
+                const clearCacheResponse = await fetch(workerUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({})
+                });
+                
+                const clearCacheData = await clearCacheResponse.json();
+                
+                if (clearCacheData.success) {
+                    // 清除本地缓存
+                    localStorage.removeItem('videosData');
+                    localStorage.removeItem('videosDataTimestamp');
+                    
+                    // 重新获取数据
+                    await loadVideosData();
+                    
+                    // 显示成功提示
+                    customConfirm('数据刷新成功！', '成功', '确定', null);
+                } else {
+                    // 显示失败提示
+                    customConfirm('刷新失败，请稍后重试', '失败', '确定', null);
+                }
+            } catch (error) {
+                console.error('刷新数据失败:', error);
+                customConfirm('刷新失败，请检查网络连接', '错误', '确定', null);
+            } finally {
+                // 恢复按钮状态
+                refreshDataBtn.innerHTML = '<i class="fas fa-sync-alt"></i>';
+                refreshDataBtn.disabled = false;
+            }
+        });
+    }
 }
 
 // 深色模式切换功能

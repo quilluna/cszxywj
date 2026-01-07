@@ -17,7 +17,7 @@
             </div>
             <!-- 设置按钮和菜单 -->
             <div class="settings-container">
-                <button id="settingsBtn" class="settings-btn">⚙️</button>
+                <button id="settingsBtn" class="settings-btn"><i class="fas fa-cog"></i></button>
                 <div id="settingsMenu" class="settings-menu">
                     <!-- 主题设置分类 -->
                     <div class="settings-category">
@@ -25,12 +25,20 @@
                         <div class="settings-item">
                             <span class="settings-label">深色模式</span>
                             <button id="themeToggle" class="theme-btn">
-                                <span class="sun-icon">☀️</span>
-                                <span class="moon-icon">🌙</span>
-                            </button>
+                                    <span class="sun-icon"><i class="fas fa-sun"></i></span>
+                                    <span class="moon-icon"><i class="fas fa-moon"></i></span>
+                                </button>
                         </div>
                     </div>
                     
+                    <!-- 数据管理分类 -->
+                    <div class="settings-category">
+                        <div class="settings-category-title">数据管理</div>
+                        <div class="settings-item">
+                            <span class="settings-label">刷新数据</span>
+                            <button id="refreshDataBtn" class="refresh-data-btn"><i class="fas fa-sync-alt"></i></button>
+                        </div>
+                    </div>
 
                 </div>
             </div>

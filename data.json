@@ -9,7 +9,7 @@
       "chapter": "all",
       "video_id": "6931924026151472392",
       "thumbnail": "imgs/undertale0.jpg",
-      "title": "🏚️废墟",
+      "title": "废墟",
       "duration": "03:34",
       "date": "2021-02-22 11:25",
       "status": "已发布",
@@ -23,7 +23,7 @@
       "chapter": "all",
       "video_id": "6980319242474294542",
       "thumbnail": "imgs/undertale1.jpg",
-      "title": "❄️雪镇",
+      "title": "雪镇",
       "duration": "06:27",
       "date": "2021-07-02 21:23",
       "status": "已发布",
@@ -36,7 +36,7 @@
       "chapter": "all",
       "video_id": "6986475838787161357",
       "thumbnail": "imgs/undertale2.jpg",
-      "title": "🏞️瀑布",
+      "title": "瀑布",
       "duration": "10:20",
       "date": "2021-07-19 11:34",
       "status": "已发布",
@@ -47,9 +47,9 @@
     {
       "game": "undertale",
       "chapter": "all",
-      "video_id": "",
+      "video_id": "7024810422449424404",
       "thumbnail": "imgs/undertale3.jpg",
-      "title": "🌋热域",
+      "title": "热域",
       "duration": "12:03",
       "date": "2021-08-24 14:26",
       "status": "异常",
@@ -63,7 +63,7 @@
       "chapter": "all",
       "video_id": "7032947727679917349",
       "thumbnail": "imgs/undertale4.jpg",
-      "title": "⏳核心+中立线",
+      "title": "核心+中立线",
       "duration": "08:46",
       "date": "2021-11-21 17:09",
       "status": "已发布",
@@ -76,7 +76,7 @@
       "chapter": "all",
       "video_id": "7034871585819381029",
       "thumbnail": "imgs/undertale5.jpg",
-      "title": "🕊️和平线",
+      "title": "和平线",
       "duration": "10:48",
       "date": "2021-11-26 21:34",
       "status": "已发布",
@@ -89,7 +89,7 @@
       "chapter": "all",
       "video_id": "7064745954355727646",
       "thumbnail": "imgs/undertale6.jpg",
-      "title": "🔪屠杀线",
+      "title": "屠杀线",
       "duration": "49:59",
       "date": "2022-02-15 09:43",
       "status": "已发布",
@@ -529,5 +529,5 @@
       "date": "2025-01-06"
     }
   ],
-  "last_updated": "2026-01-06"
+  "last_updated": "2026-01-07"
 }
