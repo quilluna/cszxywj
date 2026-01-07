@@ -1462,6 +1462,30 @@ window.addEventListener('scroll', function() {
     progressBar.style.width = scrolled + '%';
 });
 
+// 快速链接点击计数功能
+let quickLinksClickCount = 0;
+let quickLinksTimer = null;
+function handleQuickLinksClick() {
+    // 清除之前的计时器
+    if (quickLinksTimer) {
+        clearTimeout(quickLinksTimer);
+    }
+    
+    // 增加点击计数
+    quickLinksClickCount++;
+    
+    // 检查是否达到5次点击
+    if (quickLinksClickCount >= 5) {
+        document.getElementById('admin-link').style.display = 'block';
+        quickLinksClickCount = 0;
+    } else {
+        // 设置新的计时器，1秒后重置计数
+        quickLinksTimer = setTimeout(() => {
+            quickLinksClickCount = 0;
+        }, 1000);
+    }
+}
+
 // 为所有可点击元素添加点击反馈
 function addClickFeedback() {
     const clickableElements = document.querySelectorAll('a, button, .video-card, .video-item, .resource-item');
@@ -1533,8 +1557,8 @@ function addClickFeedback() {
             }, 600);
         });
     });
-    
-    // 添加ripple动画样式
+
+// 添加ripple动画样式
     const style = document.createElement('style');
     style.textContent = `
         @keyframes ripple {
