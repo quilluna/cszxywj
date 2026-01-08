@@ -1,68 +1,50 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>攻略内容 - 传说之下攻略站</title>
-    <link rel="icon" href="imgs/heart.png" type="image/png">
-    <link rel="stylesheet" href="css/style.css">
-    <link href="https://fonts.loli.net/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
-    <script src="js/includes.js"></script>
-
-</head>
-<body>
-    <script>
-        initPage('攻略内容 - 传说之下攻略站', 'content');
-    </script>
-
-    <!-- 内容页面 -->
-    <main class="content-page">
-        <div class="container">
-            <h2 class="page-title">攻略内容</h2>
-            
-            <!-- 游戏选择区域 -->
-            <div id="game-selector" class="game-selector fade-in">
-                <div class="selector-container">
-                    <h3>请选择游戏类型</h3>
-                    <div class="game-options">
-                        <button class="game-option game-option-with-cover game-option-undertale" data-game="undertale"></button>
-                        <button class="game-option game-option-with-cover game-option-deltarune" data-game="deltarune"></button>
-                    </div>
+<!-- 内容页面 -->
+<main class="content-page">
+    <div class="container">
+        <h2 class="page-title">攻略内容</h2>
+        
+        <!-- 游戏选择区域 -->
+        <div id="game-selector" class="game-selector fade-in">
+            <div class="selector-container">
+                <h3>请选择游戏类型</h3>
+                <div class="game-options">
+                    <button class="game-option game-option-with-cover game-option-undertale" data-game="undertale"></button>
+                    <button class="game-option game-option-with-cover game-option-deltarune" data-game="deltarune"></button>
                 </div>
-            </div>
-            
-            <!-- 章节选择区域 -->
-            <div id="chapter-selector" class="chapter-selector hidden fade-in">
-                <div class="selector-container">
-                    <h3>请选择章节</h3>
-                    <div class="chapter-options">
-                        <button class="chapter-option" data-chapter="1">第一章</button>
-                        <button class="chapter-option" data-chapter="2">第二章</button>
-                        <button class="chapter-option" data-chapter="3">第三章</button>
-                        <button class="chapter-option" data-chapter="4">第四章</button>
-                        <button class="chapter-option" data-chapter="analysis">剧情分析</button>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- 视频显示区域 -->
-            <div id="video-container" class="video-container hidden fade-in">
             </div>
         </div>
-    </main>
-
-    <!-- 自定义确认框模态框 -->
-    <div id="custom-confirm" class="custom-confirm-modal">
-        <div class="custom-confirm-overlay"></div>
-        <div class="custom-confirm-content">
-            <div class="custom-confirm-title">警告</div>
-            <div class="custom-confirm-message">此视频包含剧透内容！</div>
-            <div class="custom-confirm-buttons">
-                <button id="confirm-cancel" class="custom-confirm-btn custom-confirm-cancel">取消</button>
-                <button id="confirm-ok" class="custom-confirm-btn custom-confirm-ok">确定</button>
+        
+        <!-- 章节选择区域 -->
+        <div id="chapter-selector" class="chapter-selector hidden fade-in">
+            <div class="selector-container">
+                <h3>请选择章节</h3>
+                <div class="chapter-options">
+                    <button class="chapter-option" data-chapter="1">第一章</button>
+                    <button class="chapter-option" data-chapter="2">第二章</button>
+                    <button class="chapter-option" data-chapter="3">第三章</button>
+                    <button class="chapter-option" data-chapter="4">第四章</button>
+                    <button class="chapter-option" data-chapter="analysis">剧情分析</button>
+                </div>
             </div>
+        </div>
+        
+        <!-- 视频显示区域 -->
+        <div id="video-container" class="video-container hidden fade-in">
         </div>
     </div>
-    <script src="js/script.js"></script>
-</body>
+</main>
+
+<!-- 自定义确认框模态框 -->
+<div id="custom-confirm" class="custom-confirm-modal">
+    <div class="custom-confirm-overlay"></div>
+    <div class="custom-confirm-content">
+        <div class="custom-confirm-title">警告</div>
+        <div class="custom-confirm-message">此视频包含剧透内容！</div>
+        <div class="custom-confirm-buttons">
+            <button id="confirm-cancel" class="custom-confirm-btn custom-confirm-cancel">取消</button>
+            <button id="confirm-ok" class="custom-confirm-btn custom-confirm-ok">确定</button>
+        </div>
+    </div>
+</div>
 </html>

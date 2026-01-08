@@ -8,98 +8,82 @@
     <link rel="stylesheet" href="css/style.css">
     <link href="https://fonts.loli.net/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://lib.baomitu.com/font-awesome/7.0.0/css/all.min.css">
-    <script src="js/includes.js"></script>
 </head>
 <body>
-    <script>
-        initPage('传说之下攻略站 - Undertale & Deltarune', 'home');
-    </script>
+    <!-- 导航栏 -->
+    <header class="navbar">
+        <div class="container">
+            <div class="logo">
+                <h1>Frisk的官网</h1>
+            </div>
+            <nav class="nav-menu">
+                <a href="#" class="nav-link active" data-page="home">主页</a>
+                <a href="#" class="nav-link" data-page="content">攻略内容</a>
+                <a href="#" class="nav-link" data-page="download">资源下载</a>
+            </nav>
+            <!-- 汉堡菜单按钮 -->
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <!-- 设置按钮和菜单 -->
+            <div class="settings-container">
+                <button id="settingsBtn" class="settings-btn"><i class="fas fa-cog"></i></button>
+                <div id="settingsMenu" class="settings-menu">
+                    <!-- 主题设置分类 -->
+                    <div class="settings-category">
+                        <div class="settings-category-title">主题</div>
+                        <div class="settings-item">
+                            <span class="settings-label">深色模式</span>
+                            <button id="themeToggle" class="theme-btn">
+                                    <span class="sun-icon"><i class="fas fa-sun"></i></span>
+                                    <span class="moon-icon"><i class="fas fa-moon"></i></span>
+                                </button>
+                        </div>
+                    </div>
+                    
+                    <!-- 数据管理分类 -->
+                    <div class="settings-category">
+                        <div class="settings-category-title">数据管理</div>
+                        <div class="settings-item">
+                            <span class="settings-label">刷新数据</span>
+                            <button id="refreshDataBtn" class="refresh-data-btn"><i class="fas fa-sync-alt"></i></button>
+                        </div>
+                    </div>
+                    
+                    <!-- 音乐设置分类 -->
+                    <div class="settings-category">
+                        <div class="settings-category-title">音乐</div>
+                        <div class="settings-item">
+                            <span class="settings-label">背景音乐</span>
+                            <button id="musicToggle" class="toggle-btn">
+                                    <span class="toggle-inner"></span>
+                                    <span class="toggle-switch"></span>
+                                </button>
+                        </div>
+                        <div class="settings-item" id="musicThemeSelector">
+                            <span class="settings-label">音乐主题</span>
+                            <select id="musicTheme" class="music-theme-selector">
+                                <option value="undertale">Undertale</option>
+                                <option value="deltarune">Deltarune</option>
+                            </select>
+                        </div>
+                        <div class="settings-item">
+                            <div class="label-toggle-container">
+                                <span class="settings-label">音乐音量</span>
+                            </div>
+                            <input type="range" id="musicVolume" min="0" max="100" value="70" class="volume-slider">
+                        </div>
+                    </div>
 
-    <!-- 主页内容 -->
-    <main class="main-content">
-        <!-- 个人信息区域 - 头像和名称 -->
-        <section class="profile-section">
-            <div class="container">
-                <div class="profile-card">
-                    <div class="profile-avatar">
-                        <img src="imgs/avatar.jpg" alt="头像">
-                    </div>
-                    <div class="profile-name-container">
-                        <h3 class="profile-name">Frisk</h3>
-                        <p class="profile-douyin">抖音号：cszxywj</p>
-                    </div>
                 </div>
             </div>
-        </section>
-        
-        <!-- 通知区域 -->
-        <section class="update-section">
-            <div id="notifications-container"></div>
-        </section>
-        
-        <!-- 更新预告区域 -->
-        <section class="update-section">
-            <div class="profile预告">
-                <h4><i class="fas fa-bullhorn"></i> 更新预告</h4>
-                <h5 class="update-title">三角符文第四章 p1 攻略</h5>
-                <p class="update-time" data-status="pending">更新时间待定</p>
-                <p class="update-countdown" id="countdown-timer">正在计算...</p>
-            </div>
-        </section>
+        </div>
+    </header>
 
-        <script>
-            // 动态计算倒计时
-            function updateCountdown() {
-                // 检查更新时间状态
-                const updateTimeElement = document.querySelector('.update-time');
-                const countdownElement = document.getElementById('countdown-timer');
-                
-                // 如果是待定状态，则隐藏倒计时
-                if (updateTimeElement && updateTimeElement.dataset.status === 'pending') {
-                    countdownElement.style.display = 'none';
-                    return;
-                }
-                
-                // 从全局updatePreviewData获取下次更新时间
-                if (typeof updatePreviewData !== 'undefined' && updatePreviewData.time && updatePreviewData.time !== 'pending') {
-                    const nextUpdateTime = new Date(updatePreviewData.time).getTime();
-                    const now = new Date().getTime();
-                    const timeRemaining = nextUpdateTime - now;
-
-                    if (timeRemaining <= 0) {
-                        document.getElementById('countdown-timer').innerHTML = '视频已更新！';
-                        return;
-                    }
-
-                    // 计算天、时、分、秒
-                    const days = Math.floor(timeRemaining / (1000 * 60 * 60 * 24));
-                    const hours = Math.floor((timeRemaining % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                    const minutes = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
-                    const seconds = Math.floor((timeRemaining % (1000 * 60)) / 1000);
-
-                    // 格式化显示
-                    const countdownString = `剩 ${days} 天 ${hours} 时 ${minutes} 分 ${seconds} 秒`;
-                    document.getElementById('countdown-timer').innerHTML = countdownString;
-                }
-            }
-
-            // 初始调用一次
-            updateCountdown();
-
-            // 每秒更新一次
-            setInterval(updateCountdown, 1000);
-        </script>
-
-        <!-- 热门视频区域 -->
-        <section class="popular-videos">
-            <div class="container">
-                <h2 class="section-title">为你推荐</h2>
-                <div class="no-videos">
-                    <p>暂无推荐视频</p>
-                </div>
-            </div>
-        </section>
-    </main>
+    <!-- 内容容器 -->
+    <main id="page-content" class="main-content"></main>
 
     <!-- 警告模态框 -->
     <div id="custom-confirm" class="custom-confirm-modal">
@@ -115,5 +99,152 @@
     </div>
 
     <script src="js/script.js"></script>
+    <script>
+        // 页面切换逻辑
+        function loadPage(pageName) {
+            // 更新导航栏激活状态
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            document.querySelector(`[data-page="${pageName}"]`).classList.add('active');
+            
+            // 设置页面标题
+            const pageTitles = {
+                'home': '传说之下攻略站 - Undertale & Deltarune',
+                'content': '攻略内容 - 传说之下攻略站',
+                'download': '资源下载 - 传说之下攻略站'
+            };
+            document.title = pageTitles[pageName] || '传说之下攻略站';
+            
+            // 动态加载页面内容
+            fetch(`${pageName}.html`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.text();
+                })
+                .then(html => {
+                    document.getElementById('page-content').innerHTML = html;
+                    
+                    // 页面加载完成后执行相应的脚本
+                    if (pageName === 'home') {
+                        // 初始化主页脚本
+                        initNotifications();
+                        loadRecommendedVideos();
+                        renderUpdatePreview();
+                        if (typeof updateCountdown === 'function') {
+                            updateCountdown();
+                            setInterval(updateCountdown, 1000);
+                        }
+                    } else if (pageName === 'content') {
+                        // 初始化内容页脚本
+                        initVideoFilter();
+                        initGameSelection();
+                        initChapterSelection();
+                    } else if (pageName === 'download') {
+                        // 初始化下载页脚本
+                        initResourceFilter();
+                        initDownloadCounter();
+                    }
+                    
+                    // 全局初始化函数（所有页面都需要）
+                    initScrollAnimation();
+                    initSmoothScroll();
+                    initDesktopTopBar();
+                    initCustomConfirm();
+                    initSettingsMenu();
+                    initDarkMode();
+                    initMobileMenu();
+                    initStatusWarningTips();
+                    // 主页特定初始化
+                    if (pageName === 'home') {
+                        initRuntimeCounter();
+                    }
+                    
+                    // 页面切换后滚动到顶部
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                })
+                .catch(error => {
+                    console.error('Error loading page:', error);
+                    // 直接显示404页面内容
+                    fetch('404.html')
+                        .then(response => response.text())
+                        .then(html => {
+                            // 直接设置整个404页面内容
+                            document.getElementById('page-content').innerHTML = html;
+                        })
+                        .catch(err => {
+                            console.error('Error loading 404 page:', err);
+                            document.getElementById('page-content').innerHTML = '<div class="error-page"><h2>页面加载失败</h2><p>请稍后重试</p></div>';
+                        });
+                });
+        }
+        
+        // 初始化页面
+        document.addEventListener('DOMContentLoaded', () => {
+            // 加载页脚
+            fetch('partials/footer.html')
+                .then(response => response.text())
+                .then(html => {
+                    // 插入页脚到body末尾
+                    document.body.insertAdjacentHTML('beforeend', html);
+                    // 页脚加载完成后初始化运行时间计数器
+                    if (typeof initRuntimeCounter === 'function') {
+                        initRuntimeCounter();
+                    }
+                });
+            
+            // 检查URL中的锚点
+            function checkAnchor() {
+                const hash = window.location.hash.substring(1); // 获取锚点（去掉#）
+                
+                // 定义锚点到页面的映射
+                const anchorToPage = {
+                    'home': 'home',
+                    'content': 'content',
+                    'download': 'download'
+                };
+                
+                // 如果锚点存在且对应一个页面，则加载该页面
+                if (hash && anchorToPage[hash]) {
+                    return anchorToPage[hash];
+                }
+                
+                // 默认返回home
+                return 'home';
+            }
+            
+            // 根据锚点加载初始页面
+            const initialPage = checkAnchor();
+            loadPage(initialPage);
+            
+            // 添加导航栏点击事件
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const pageName = link.getAttribute('data-page');
+                    loadPage(pageName);
+                    
+                    // 更新URL锚点
+                    window.location.hash = pageName;
+                });
+            });
+            
+            // 监听URL锚点变化
+            window.addEventListener('hashchange', () => {
+                const hash = window.location.hash.substring(1);
+                const anchorToPage = {
+                    'home': 'home',
+                    'content': 'content',
+                    'download': 'download'
+                };
+                
+                if (hash && anchorToPage[hash]) {
+                    loadPage(anchorToPage[hash]);
+                }
+            });
+        });
+    </script>
 </body>
 </html>

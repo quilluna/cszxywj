@@ -213,6 +213,151 @@ function formatDate(dateStr) {
     return formatDateTime(dateStr, false);
 }
 
+// 保存上一次的倒计时值
+let lastCountdownValues = {
+    days: 0,
+    hours: 0,
+    minutes: 0,
+    seconds: 0
+};
+
+// 动态计算倒计时
+function updateCountdown() {
+    // 检查更新时间状态
+    const updateTimeElement = document.querySelector('.update-time');
+    const countdownElement = document.getElementById('countdown-timer');
+    
+    // 从全局updatePreviewData获取下次更新时间
+    if (typeof updatePreviewData !== 'undefined' && updatePreviewData.time && updatePreviewData.time !== 'pending') {
+        // 更新状态为已安排
+        if (updateTimeElement) {
+            updateTimeElement.dataset.status = 'scheduled';
+            updateTimeElement.textContent = `更新时间：${updatePreviewData.time}`;
+        }
+        
+        // 显示倒计时
+        if (countdownElement) {
+            countdownElement.style.display = 'block';
+            
+            // 处理日期格式，确保正确解析
+            let nextUpdateTime;
+            const timeStr = updatePreviewData.time;
+            if (timeStr.includes(' ')) {
+                // 格式：YYYY-MM-DD HH:MM
+                nextUpdateTime = new Date(timeStr.replace(' ', 'T')).getTime();
+            } else {
+                nextUpdateTime = new Date(timeStr).getTime();
+            }
+            
+            // 检查日期是否有效
+            if (!isNaN(nextUpdateTime)) {
+                const now = new Date().getTime();
+                const timeRemaining = nextUpdateTime - now;
+
+                if (timeRemaining <= 0) {
+                    countdownElement.textContent = '视频已更新！';
+                    return;
+                }
+
+                // 计算天、时、分、秒
+                const days = Math.floor(timeRemaining / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((timeRemaining % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((timeRemaining % (1000 * 60)) / 1000);
+
+                // 检查数字是否变化（在更新lastCountdownValues之前）
+                const hasChanged = {
+                    days: days !== lastCountdownValues.days,
+                    hours: hours !== lastCountdownValues.hours,
+                    minutes: minutes !== lastCountdownValues.minutes,
+                    seconds: seconds !== lastCountdownValues.seconds
+                };
+
+                // 检查现有倒计时数字元素
+                const numberElements = countdownElement.querySelectorAll('.countdown-number');
+                
+                if (numberElements.length === 4) {
+                    // 已有元素，只更新变化的数字
+                    if (hasChanged.days) {
+                        numberElements[0].classList.add('changing');
+                        // 在动画透明阶段更新数字
+                        setTimeout(() => {
+                            numberElements[0].textContent = days;
+                        }, 200); // 动画总时长的40%，此时数字完全透明
+                        // 动画结束后移除changing类
+                        setTimeout(() => {
+                            numberElements[0].classList.remove('changing');
+                        }, 500);
+                    }
+                    if (hasChanged.hours) {
+                        numberElements[1].classList.add('changing');
+                        // 在动画透明阶段更新数字
+                        setTimeout(() => {
+                            numberElements[1].textContent = hours;
+                        }, 200); // 动画总时长的40%，此时数字完全透明
+                        // 动画结束后移除changing类
+                        setTimeout(() => {
+                            numberElements[1].classList.remove('changing');
+                        }, 500);
+                    }
+                    if (hasChanged.minutes) {
+                        numberElements[2].classList.add('changing');
+                        // 在动画透明阶段更新数字
+                        setTimeout(() => {
+                            numberElements[2].textContent = minutes;
+                        }, 200); // 动画总时长的40%，此时数字完全透明
+                        // 动画结束后移除changing类
+                        setTimeout(() => {
+                            numberElements[2].classList.remove('changing');
+                        }, 500);
+                    }
+                    if (hasChanged.seconds) {
+                        numberElements[3].classList.add('changing');
+                        // 在动画透明阶段更新数字
+                        setTimeout(() => {
+                            numberElements[3].textContent = seconds;
+                        }, 200); // 动画总时长的40%，此时数字完全透明
+                        // 动画结束后移除changing类
+                        setTimeout(() => {
+                            numberElements[3].classList.remove('changing');
+                        }, 500);
+                    }
+                } else {
+                    // 首次渲染，构建完整HTML结构
+                    let countdownHTML = '剩 ';
+                    countdownHTML += `<span class="countdown-number">${days}</span> 天 `;
+                    countdownHTML += `<span class="countdown-number">${hours}</span> 时 `;
+                    countdownHTML += `<span class="countdown-number">${minutes}</span> 分 `;
+                    countdownHTML += `<span class="countdown-number">${seconds}</span> 秒`;
+                    // 更新倒计时显示
+                    countdownElement.innerHTML = countdownHTML;
+                }
+
+                // 保存当前值
+                lastCountdownValues = {
+                    days,
+                    hours,
+                    minutes,
+                    seconds
+                };
+            } else {
+                // 日期格式无效
+                countdownElement.textContent = '时间格式错误';
+            }
+        }
+    } else {
+        // 如果没有更新时间，则隐藏倒计时
+        if (countdownElement) {
+            countdownElement.style.display = 'none';
+        }
+        // 更新状态为待定
+        if (updateTimeElement) {
+            updateTimeElement.dataset.status = 'pending';
+            updateTimeElement.textContent = '更新时间待定';
+        }
+    }
+}
+
 // 渲染更新预告时间
 function renderUpdatePreview() {
     const updateTimeElement = document.querySelector('.update-time');
@@ -240,6 +385,10 @@ function renderUpdatePreview() {
     // 更新倒计时
     if (countdownElement && updatePreviewData.time && updatePreviewData.time !== 'pending') {
         countdownElement.style.display = 'block';
+        // 初始化倒计时内容
+        updateCountdown();
+    } else if (countdownElement) {
+        countdownElement.style.display = 'none';
     }
 }
 
@@ -260,6 +409,10 @@ document.addEventListener('DOMContentLoaded', function() {
         loadRecommendedVideos();
         renderUpdatePreview(); // 渲染更新预告时间
     });
+    
+    // 初始化设置菜单和声音设置
+    initSettingsMenu();
+    initSoundSettings();
     
     // 初始化模态框关闭功能
     const closeModal = document.getElementById('close-modal');
@@ -532,23 +685,29 @@ function initGameSelection() {
                     
                     if (game === 'undertale') {
                         // 直接显示传说之下视频
-                        chapterSelector.classList.add('hidden');
+                        if (chapterSelector) {
+                            chapterSelector.classList.add('hidden');
+                        }
                         
                         // 重置视频容器的动画状态
-                        videoContainer.classList.remove('visible');
-                        videoContainer.style.opacity = '0';
-                        videoContainer.style.transform = 'translateY(20px)';
-                        
-                        // 显示视频容器
-                        videoContainer.classList.remove('hidden');
-                        videoContainer.classList.remove('fade-out');
+                        if (videoContainer) {
+                            videoContainer.classList.remove('visible');
+                            videoContainer.style.opacity = '0';
+                            videoContainer.style.transform = 'translateY(20px)';
+                            
+                            // 显示视频容器
+                            videoContainer.classList.remove('hidden');
+                            videoContainer.classList.remove('fade-out');
+                        }
                         
                         // 使用requestAnimationFrame代替强制重排
                         requestAnimationFrame(() => {
-                            videoContainer.classList.add('visible');
+                            if (videoContainer) {
+                                videoContainer.classList.add('visible');
+                            }
                         });
                         
-                        // 筛选并渲染视频
+                        // 筛选并渲染视频（排除状态异常的视频）
                         const undertaleVideos = allVideosData.filter(v => v.game === 'undertale');
                         renderVideosToContainer(undertaleVideos, videoContainer);
                         
@@ -638,7 +797,7 @@ function initChapterSelection() {
                         videoContainer.classList.add('visible');
                     });
                     
-                    // 筛选并渲染视频
+                    // 筛选并渲染视频（排除状态异常的视频）
                     const deltaruneVideos = allVideosData.filter(v => v.game === 'deltarune' && (chapter === 'all' || v.chapter === chapter));
                     renderVideosToContainer(deltaruneVideos, videoContainer);
                     
@@ -688,27 +847,34 @@ function initSettingsMenu() {
     
     if (!settingsBtn || !settingsMenu) return;
     
+    // 移除现有的事件监听器，避免重复添加
+    const newSettingsBtn = settingsBtn.cloneNode(true);
+    settingsBtn.parentNode.replaceChild(newSettingsBtn, settingsBtn);
+    
+    // 重新获取引用
+    const updatedSettingsBtn = document.getElementById('settingsBtn');
+    
     // 点击设置按钮切换菜单显示状态
-    settingsBtn.addEventListener('click', (e) => {
+    updatedSettingsBtn.addEventListener('click', (e) => {
         e.stopPropagation();
         settingsMenu.classList.toggle('active');
-    });
-    
-    // 点击页面其他地方关闭设置菜单
-    document.addEventListener('click', (e) => {
-        if (!settingsBtn.contains(e.target) && !settingsMenu.contains(e.target)) {
-            settingsMenu.classList.remove('active');
-        }
     });
     
     // 刷新数据按钮功能
     const refreshDataBtn = document.getElementById('refreshDataBtn');
     if (refreshDataBtn) {
-        refreshDataBtn.addEventListener('click', async () => {
+        // 移除现有的事件监听器，避免重复添加
+        const newRefreshDataBtn = refreshDataBtn.cloneNode(true);
+        refreshDataBtn.parentNode.replaceChild(newRefreshDataBtn, refreshDataBtn);
+        
+        // 重新获取引用
+        const updatedRefreshDataBtn = document.getElementById('refreshDataBtn');
+        
+        updatedRefreshDataBtn.addEventListener('click', async () => {
             try {
                 // 显示加载状态
-                refreshDataBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-                refreshDataBtn.disabled = true;
+                updatedRefreshDataBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+                updatedRefreshDataBtn.disabled = true;
                 
                 // 调用clear_cache端点
                 const workerUrl = 'https://api.bo173.dpdns.org/api/clear_cache';
@@ -741,8 +907,8 @@ function initSettingsMenu() {
                 customConfirm('刷新失败，请检查网络连接', '错误', '确定', null);
             } finally {
                 // 恢复按钮状态
-                refreshDataBtn.innerHTML = '<i class="fas fa-sync-alt"></i>';
-                refreshDataBtn.disabled = false;
+                updatedRefreshDataBtn.innerHTML = '<i class="fas fa-sync-alt"></i>';
+                updatedRefreshDataBtn.disabled = false;
             }
         });
     }
@@ -755,12 +921,21 @@ function initDarkMode() {
     
     if (!themeToggle) return;
     
+    // 移除现有的事件监听器，避免重复添加
+    const newThemeToggle = themeToggle.cloneNode(true);
+    themeToggle.parentNode.replaceChild(newThemeToggle, themeToggle);
+    
+    // 重新获取引用
+    const updatedThemeToggle = document.getElementById('themeToggle');
+    
     // 更新主题按钮状态
     function updateThemeButton(theme) {
-        if (theme === 'dark') {
-            themeToggle.classList.add('active');
-        } else {
-            themeToggle.classList.remove('active');
+        if (updatedThemeToggle) {
+            if (theme === 'dark') {
+                updatedThemeToggle.classList.add('active');
+            } else {
+                updatedThemeToggle.classList.remove('active');
+            }
         }
     }
     
@@ -774,24 +949,26 @@ function initDarkMode() {
     updateThemeButton(initialTheme);
     
     // 添加点击事件监听器
-    themeToggle.addEventListener('click', () => {
-        // 切换主题
-        const currentTheme = root.getAttribute('data-theme');
-        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-        
-        // 更新主题
-        root.setAttribute('data-theme', newTheme);
-        updateThemeButton(newTheme);
-        
-        // 保存到本地存储
-        localStorage.setItem('theme', newTheme);
-        
-        // 添加切换动画效果
-        themeToggle.style.transform = 'scale(0.9)';
-        setTimeout(() => {
-            themeToggle.style.transform = 'scale(1)';
-        }, 150);
-    });
+    if (updatedThemeToggle) {
+        updatedThemeToggle.addEventListener('click', () => {
+            // 切换主题
+            const currentTheme = root.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            // 更新主题
+            root.setAttribute('data-theme', newTheme);
+            updateThemeButton(newTheme);
+            
+            // 保存到本地存储
+            localStorage.setItem('theme', newTheme);
+            
+            // 添加切换动画效果
+            updatedThemeToggle.style.transform = 'scale(0.9)';
+            setTimeout(() => {
+                updatedThemeToggle.style.transform = 'scale(1)';
+            }, 150);
+        });
+    }
     
     // 监听系统主题变化
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
@@ -1265,6 +1442,208 @@ function initResourceFilter() {
     }
 }
 
+
+
+// 声音设置功能
+function initSoundSettings() {
+    // 获取声音设置相关元素
+    let musicToggle = document.getElementById('musicToggle');
+    let musicVolume = document.getElementById('musicVolume');
+    let musicThemeSelector = document.getElementById('musicThemeSelector');
+    let musicTheme = document.getElementById('musicTheme');
+    
+    // 检查元素是否存在
+    if (!musicToggle || !musicVolume || !musicThemeSelector || !musicTheme) return;
+    
+    // 初始化声音设置对象
+    window.soundSettings = window.soundSettings || {
+        musicEnabled: false,
+        musicVolume: parseInt(localStorage.getItem('musicVolume')) || 70,
+        musicTheme: localStorage.getItem('musicTheme') || 'undertale'
+    };
+    const soundSettings = window.soundSettings;
+    
+    // 移除现有事件监听器，避免重复添加
+    const newMusicToggle = musicToggle.cloneNode(true);
+    const newMusicVolume = musicVolume.cloneNode(true);
+    const newMusicTheme = musicTheme.cloneNode(true);
+    
+    // 替换元素
+    musicToggle.parentNode.replaceChild(newMusicToggle, musicToggle);
+    musicVolume.parentNode.replaceChild(newMusicVolume, musicVolume);
+    musicTheme.parentNode.replaceChild(newMusicTheme, musicTheme);
+    
+    // 重新获取引用
+    musicToggle = document.getElementById('musicToggle');
+    musicVolume = document.getElementById('musicVolume');
+    musicTheme = document.getElementById('musicTheme');
+    
+    // 音量渐变函数
+    function fadeInVolume(audio, targetVolume, duration = 1000) {
+        if (!audio) return;
+        
+        audio.volume = 0;
+        const startTime = Date.now();
+        
+        function updateVolume() {
+            const elapsed = Date.now() - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            audio.volume = targetVolume * progress;
+            
+            if (progress < 1) {
+                requestAnimationFrame(updateVolume);
+            }
+        }
+        
+        updateVolume();
+    }
+    
+    function fadeOutVolume(audio, duration = 1000) {
+        if (!audio) return;
+        
+        const startVolume = audio.volume;
+        const startTime = Date.now();
+        
+        return new Promise((resolve) => {
+            function updateVolume() {
+                const elapsed = Date.now() - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                audio.volume = startVolume * (1 - progress);
+                
+                if (progress < 1) {
+                    requestAnimationFrame(updateVolume);
+                } else {
+                    resolve();
+                }
+            }
+            
+            updateVolume();
+        });
+    }
+    
+    // 初始化音频对象
+    function initAudio() {
+        // 只有在音频对象不存在时才创建
+        if (!window.backgroundMusic) {
+            window.backgroundMusic = new Audio();
+            window.backgroundMusic.loop = true;
+        }
+        
+        // 更新音量设置
+        window.backgroundMusic.volume = soundSettings.musicVolume / 100;
+        
+        // 根据localStorage设置更新音频状态
+        if (soundSettings.musicEnabled) {
+            updateMusicTheme(); // 播放音乐
+        } else {
+            // 确保音乐不播放
+            if (window.backgroundMusic) {
+                window.backgroundMusic.pause();
+            }
+        }
+    }
+    
+    // 更新音乐主题
+    function updateMusicTheme() {
+        if (!window.backgroundMusic) return;
+        
+        // 根据主题设置音乐路径
+        let musicPath = '';
+        if (soundSettings.musicTheme === 'undertale') {
+            musicPath = 'sounds/bgm_ut.ogg';
+        } else if (soundSettings.musicTheme === 'deltarune') {
+            musicPath = 'sounds/bgm_dr.ogg'; // 使用现有的三角符文音乐文件
+        }
+        
+        // 更新音乐源并播放
+        if (musicPath && soundSettings.musicEnabled) {
+            // 只有在音乐源发生变化时才更新和播放
+            if (window.backgroundMusic.src !== window.location.origin + '/' + musicPath) {
+                window.backgroundMusic.src = musicPath;
+                window.backgroundMusic.play().catch(e => console.error('音乐播放失败:', e));
+                // 播放时添加音量渐变
+                fadeInVolume(window.backgroundMusic, soundSettings.musicVolume / 100);
+            } else if (window.backgroundMusic.paused) {
+                // 如果音乐源相同但已暂停，则恢复播放
+                window.backgroundMusic.play().catch(e => console.error('音乐播放失败:', e));
+                // 恢复播放时添加音量渐变
+                fadeInVolume(window.backgroundMusic, soundSettings.musicVolume / 100);
+            }
+        } else if (!soundSettings.musicEnabled && !window.backgroundMusic.paused) {
+            // 如果音乐被禁用且正在播放，则暂停
+            window.backgroundMusic.pause();
+        }
+    }
+    
+    // 更新UI状态
+    function updateUI() {
+        // 获取音乐相关的设置项
+        const musicThemeItem = document.querySelector('#musicThemeSelector').closest('.settings-item');
+        const musicVolumeItem = document.querySelector('#musicVolume').closest('.settings-item');
+        
+        // 更新音乐开关状态
+        if (soundSettings.musicEnabled) {
+            musicToggle.classList.add('active');
+            musicVolumeItem.style.display = 'flex';
+            musicThemeItem.style.display = 'flex';
+        } else {
+            musicToggle.classList.remove('active');
+            musicVolumeItem.style.display = 'none';
+            musicThemeItem.style.display = 'none';
+        }
+        
+        // 更新音量滑块值
+        musicVolume.value = soundSettings.musicVolume;
+        
+        // 更新音乐主题选择器
+        musicTheme.value = soundSettings.musicTheme;
+    }
+    
+    // 保存设置到本地存储
+    function saveSettings() {
+        localStorage.setItem('musicVolume', soundSettings.musicVolume);
+        localStorage.setItem('musicTheme', soundSettings.musicTheme);
+    }
+    
+    // 音乐开关点击事件
+    musicToggle.addEventListener('click', async () => {
+        soundSettings.musicEnabled = !soundSettings.musicEnabled;
+        updateUI();
+        saveSettings();
+        
+        // 控制音乐播放
+        if (soundSettings.musicEnabled) {
+            updateMusicTheme(); // 确保音乐主题和src被正确设置
+        } else {
+            if (window.backgroundMusic && !window.backgroundMusic.paused) {
+                // 暂停时添加音量渐变
+                await fadeOutVolume(window.backgroundMusic);
+                window.backgroundMusic.pause();
+            }
+        }
+    });
+    
+    // 音乐音量变化事件
+    musicVolume.addEventListener('input', () => {
+        soundSettings.musicVolume = parseInt(musicVolume.value);
+        if (window.backgroundMusic) {
+            window.backgroundMusic.volume = soundSettings.musicVolume / 100;
+        }
+        saveSettings();
+    });
+    
+    // 音乐主题变化事件
+    musicTheme.addEventListener('change', () => {
+        soundSettings.musicTheme = musicTheme.value;
+        updateMusicTheme();
+        saveSettings();
+    });
+    
+    // 初始化
+    updateUI(); // 先更新UI，确保音量滑块显示正确
+    initAudio();
+}
+
 // 滚动动画功能
 function initScrollAnimation() {
     // 使用动态选择器，每次调用时都重新获取元素
@@ -1324,6 +1703,7 @@ function initSmoothScroll() {
         });
     });
 }
+
 
 // 下载计数器功能
 function initDownloadCounter() {
@@ -1574,6 +1954,7 @@ function addClickFeedback() {
 // 初始化点击反馈
 addClickFeedback();
 
+
 // 添加键盘导航支持
 document.addEventListener('keydown', function(e) {
     // ESC键关闭菜单
@@ -1702,7 +2083,7 @@ document.addEventListener('DOMContentLoaded', initStatusWarningTips);
 // 随机显示推荐视频
 function loadRecommendedVideos() {
     // 使用全局变量allVideosData的副本，避免影响原始顺序
-    const allVideos = [...allVideosData];
+    const allVideos = [...allVideosData].filter(v => v.status !== '异常');
     
     if (allVideos.length === 0) return;
     

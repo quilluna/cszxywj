@@ -74,6 +74,7 @@
             font-size: 1rem;
             cursor: pointer;
             transition: all 0.3s ease;
+            margin-top: 80px;
             margin-bottom: 20px;
         }
         
@@ -165,6 +166,13 @@
                 document.body.classList.add('bg_dr');
             }
             
+            // 应用保存的主题设置
+            const savedTheme = localStorage.getItem('theme');
+            const root = document.documentElement;
+            if (savedTheme) {
+                root.setAttribute('data-theme', savedTheme);
+            }
+            
             // 如果没有提供video_id，显示错误信息
             if (!videoId) {
                 document.getElementById('video-title').textContent = '错误：未提供视频ID';
@@ -193,8 +201,13 @@
             }
         }
         
-        // 页面加载完成后初始化播放器
-        document.addEventListener('DOMContentLoaded', initPlayer);
+        // 页面加载完成后初始化播放器和导航栏链接
+        document.addEventListener('DOMContentLoaded', () => {
+            initPlayer();
+            if (typeof fixNavbarLinks === 'function') {
+                fixNavbarLinks();
+            }
+        });
     </script>
 </body>
 </html>

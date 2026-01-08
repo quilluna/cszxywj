@@ -5,9 +5,9 @@
                 <h1>Frisk的官网</h1>
             </div>
             <nav class="nav-menu">
-                <a href="index.html" class="nav-link {activeHome}">主页</a>
-                <a href="content.html" class="nav-link {activeContent}">攻略内容</a>
-                <a href="download.html" class="nav-link {activeDownload}">资源下载</a>
+                <a href="index.html#home" class="nav-link {activeHome}">主页</a>
+                <a href="index.html#content" class="nav-link {activeContent}">攻略内容</a>
+                <a href="index.html#download" class="nav-link {activeDownload}">资源下载</a>
             </nav>
             <!-- 汉堡菜单按钮 -->
             <div class="hamburger">
@@ -28,6 +28,31 @@
                                     <span class="sun-icon"><i class="fas fa-sun"></i></span>
                                     <span class="moon-icon"><i class="fas fa-moon"></i></span>
                                 </button>
+                        </div>
+                    </div>
+                    
+                    <!-- 音乐设置分类 -->
+                    <div class="settings-category">
+                        <div class="settings-category-title">音乐</div>
+                        <div class="settings-item">
+                            <span class="settings-label">背景音乐</span>
+                            <button id="musicToggle" class="toggle-btn">
+                                    <span class="toggle-inner"></span>
+                                    <span class="toggle-switch"></span>
+                                </button>
+                        </div>
+                        <div class="settings-item" id="musicThemeSelector">
+                            <span class="settings-label">音乐主题</span>
+                            <select id="musicTheme" class="music-theme-selector">
+                                <option value="undertale">Undertale</option>
+                                <option value="deltarune">Deltarune</option>
+                            </select>
+                        </div>
+                        <div class="settings-item">
+                            <div class="label-toggle-container">
+                                <span class="settings-label">音乐音量</span>
+                            </div>
+                            <input type="range" id="musicVolume" min="0" max="100" value="70" class="volume-slider">
                         </div>
                     </div>
                     

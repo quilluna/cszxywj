@@ -44,22 +44,6 @@ function loadAllIncludes(pageTitle, activeNav) {
             const navbarHtml = replacePlaceholders(html, navReplacements);
             // 插入导航栏到body开头
             document.body.insertAdjacentHTML('afterbegin', navbarHtml);
-            // 导航栏加载完成后初始化主题按钮
-            if (typeof initDarkMode === 'function') {
-                initDarkMode();
-            }
-            // 导航栏加载完成后初始化汉堡菜单
-            if (typeof initMobileMenu === 'function') {
-                initMobileMenu();
-            }
-            // 导航栏加载完成后初始化设置菜单
-            if (typeof initSettingsMenu === 'function') {
-                initSettingsMenu();
-            }
-            // 导航栏加载完成后初始化声音设置
-            if (typeof initSoundSettings === 'function') {
-                initSoundSettings();
-            }
         });
     
     // 加载页脚
