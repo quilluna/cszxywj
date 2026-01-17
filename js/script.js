@@ -21,6 +21,14 @@ async function loadVideosData() {
         return { videos: allVideosData, notifications: allNotificationsData, updatePreview: updatePreviewData };
     }
     
+    // 获取加载提示元素
+    const loadingIndicator = document.getElementById('data-loading-indicator');
+    
+    // 显示数据加载提示
+    if (loadingIndicator) {
+        loadingIndicator.style.display = 'block';
+    }
+    
     try {
         // Cloudflare Worker API端点
         const workerUrl = 'https://api.bo173.dpdns.org/api/fetch_data';
@@ -40,11 +48,53 @@ async function loadVideosData() {
         allNotificationsData = data.notifications || [];
         updatePreviewData = data.update_preview || {};
         
+        // 检查是否使用了备选方案
+        const source = responseData._source;
+        if (source && source !== 'main') {
+            // 解析备选方案编号
+            const backupMatch = source.match(/backup(\d+)/);
+            const backupNumber = backupMatch ? backupMatch[1] : '未知';
+            
+            // 显示备选方案提示模态框
+            setTimeout(() => {
+                const modal = document.getElementById('custom-confirm');
+                if (modal) {
+                    const messageElement = document.querySelector('.custom-confirm-message');
+                    const titleElement = document.querySelector('.custom-confirm-title');
+                    const cancelBtn = document.getElementById('confirm-cancel');
+                    
+                    if (titleElement) {
+                        titleElement.textContent = '警告';
+                    }
+                    
+                    if (messageElement) {
+                        messageElement.textContent = `当前使用的是备选方案 ${backupNumber}，若数据不是最新，可联系网站管理员解决此问题。`;
+                    }
+                    
+                    if (cancelBtn) {
+                        cancelBtn.style.display = 'none';
+                    }
+                    
+                    // 使用showCustomConfirm函数显示模态框
+                    showCustomConfirm(() => {});
+                }
+            }, 1000);
+        }
+        
         // 缓存数据
         const cacheData = { videos: allVideosData, notifications: allNotificationsData, updatePreview: updatePreviewData };
         localStorage.setItem('videosData', JSON.stringify(cacheData));
         localStorage.setItem('videosDataTimestamp', now.toString());
         console.log('数据已缓存');
+        
+        // 隐藏数据加载提示
+        if (loadingIndicator) {
+            loadingIndicator.style.animation = 'fadeOut 0.3s ease forwards';
+            setTimeout(() => {
+                loadingIndicator.style.display = 'none';
+                loadingIndicator.style.animation = '';
+            }, 300);
+        }
         
         return { videos: allVideosData, notifications: allNotificationsData, updatePreview: updatePreviewData };
     } catch (error) {
@@ -85,11 +135,55 @@ async function loadVideosData() {
                     }
                 }, 1000);
                 
+                // 隐藏数据加载提示
+                if (loadingIndicator) {
+                    loadingIndicator.style.animation = 'fadeOut 0.3s ease forwards';
+                    setTimeout(() => {
+                        loadingIndicator.style.display = 'none';
+                        loadingIndicator.style.animation = '';
+                    }, 300);
+                }
+                
                 return { videos: allVideosData, notifications: allNotificationsData, updatePreview: updatePreviewData };
             }
             throw new Error('本地数据请求失败');
         } catch (localError) {
             console.error('本地数据加载失败:', localError);
+            
+            // 隐藏数据加载提示
+            if (loadingIndicator) {
+                loadingIndicator.style.animation = 'fadeOut 0.3s ease forwards';
+                setTimeout(() => {
+                    loadingIndicator.style.display = 'none';
+                    loadingIndicator.style.animation = '';
+                }, 300);
+            }
+            
+            // 显示错误提示
+            setTimeout(() => {
+                const modal = document.getElementById('custom-confirm');
+                if (modal) {
+                    const messageElement = document.querySelector('.custom-confirm-message');
+                    const titleElement = document.querySelector('.custom-confirm-title');
+                    const cancelBtn = document.getElementById('confirm-cancel');
+                    
+                    if (titleElement) {
+                        titleElement.textContent = '错误';
+                    }
+                    
+                    if (messageElement) {
+                        messageElement.textContent = '无法加载数据，请稍后重试或联系站点管理员。';
+                    }
+                    
+                    if (cancelBtn) {
+                        cancelBtn.style.display = 'none';
+                    }
+                    
+                    // 使用showCustomConfirm函数显示模态框
+                    showCustomConfirm(() => {});
+                }
+            }, 1000);
+            
             return { videos: [], notifications: [], updatePreview: {} };
         }
     }
