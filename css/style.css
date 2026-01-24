@@ -221,15 +221,15 @@ p {
 
 /* 导航栏样式 */
 .navbar {
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(20px);
-    border-bottom: 1px solid var(--border-light);
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     z-index: 1000;
-    box-shadow: var(--shadow-sm);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
     transition: all var(--transition-normal);
 }
 
@@ -255,8 +255,20 @@ p {
 
 /* 深色模式下的导航栏样式 */
 :root[data-theme="dark"] .navbar {
-    background: rgba(15, 23, 42, 0.95);
-    border-bottom-color: var(--border-light);
+    background: rgba(15, 23, 42, 0.1);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* 深色模式下的玻璃效果卡片 */
+:root[data-theme="dark"] .profile-card,
+:root[data-theme="dark"] .profile-desc-card,
+:root[data-theme="dark"] .update-section,
+:root[data-theme="dark"] .video-card,
+:root[data-theme="dark"] .video-item {
+    background: rgba(15, 23, 42, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
 }
 
 .navbar .container {
@@ -1482,11 +1494,13 @@ p {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: var(--card-bg);
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     padding: var(--spacing-xl);
     border-radius: var(--border-radius);
-    border: 1px solid var(--border-light);
-    box-shadow: var(--shadow-lg);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
     transition: all var(--transition-normal);
     position: relative;
     overflow: hidden;
@@ -1540,11 +1554,13 @@ p {
 }
 
 .profile-desc-card {
-    background: var(--card-bg);
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     padding: var(--spacing-xl);
     border-radius: var(--border-radius);
-    border: 1px solid var(--border-light);
-    box-shadow: var(--shadow-lg);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
     transition: all var(--transition-normal);
 }
 
@@ -1652,11 +1668,13 @@ p {
     margin-left: auto;
     margin-right: auto;
     padding: 0 var(--spacing-md);
-    background: var(--card-bg);
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     padding: var(--spacing-xl);
     border-radius: var(--border-radius);
-    border: 1px solid var(--border-light);
-    box-shadow: var(--shadow-lg);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
     transition: all var(--transition-normal);
     width: 100%;
 }
@@ -1760,13 +1778,15 @@ p {
 
 .video-card,
 .video-item {
-    background: var(--card-bg);
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     border-radius: var(--border-radius);
     overflow: hidden;
     transition: all var(--transition-normal);
-    border: 1px solid var(--border-light);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     cursor: pointer;
-    box-shadow: var(--shadow-md);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
     position: relative;
 }
 
