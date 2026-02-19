@@ -31,7 +31,7 @@ async function loadVideosData() {
     
     try {
         // Cloudflare Worker API端点
-        const workerUrl = 'https://api.bo173.dpdns.org/cszxywj/fetch_data';
+        const workerUrl = 'https://api.280910.xyz/cszxywj/fetch_data';
         const response = await fetch(workerUrl, {
             method: 'POST',
             headers: {
@@ -971,7 +971,7 @@ function initSettingsMenu() {
                 updatedRefreshDataBtn.disabled = true;
                 
                 // 调用clear_cache端点
-                const workerUrl = 'https://api.bo173.dpdns.org/cszxywj/clear_cache';
+                const workerUrl = 'https://api.280910.xyz/cszxywj/clear_cache';
                 const clearCacheResponse = await fetch(workerUrl, {
                     method: 'POST',
                     headers: {

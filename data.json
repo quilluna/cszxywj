@@ -1,7 +1,7 @@
 {
   "update_preview": {
-    "title": "三角符文第四章 p1 攻略",
-    "time": "2026-02-17 00:00"
+    "title": "三角符文第四章 p2 攻略",
+    "time": "2026-02-23 22:00"
   },
   "videos": [
     {
@@ -518,16 +518,30 @@
         "Deltarune"
       ],
       "spoiler": true
+    },
+    {
+      "game": "deltarune",
+      "chapter": "4",
+      "video_id": "7605279379526012196",
+      "thumbnail": "imgs/deltarune4.jpg",
+      "title": "第四章第一集",
+      "duration": "17:16",
+      "date": "2026-02-17 00:00",
+      "status": "已发布",
+      "tags": [
+        "Deltarune"
+      ],
+      "spoiler": false
     }
   ],
   "notifications": [
     {
       "id": 1,
-      "title": "恢复更新",
-      "content": "更新已恢复！下次更新将在春节！",
+      "title": "更新周期变更说明",
+      "content": "近期约3天更新一次",
       "type": "info",
-      "date": "2025-01-06"
+      "date": "2026-02-17"
     }
   ],
-  "last_updated": "2026-01-07"
+  "last_updated": "2026-02-19"
 }
